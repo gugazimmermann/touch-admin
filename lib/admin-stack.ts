@@ -1,16 +1,35 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-// import * as sqs from 'aws-cdk-lib/aws-sqs';
+import { DynamoDBConstruct } from './constructs/dynamoDB';
+import { HttpApiConstruct } from './constructs/httpApi';
+import { LambdasConstruct } from './constructs/lambdas';
+import { httpLambdaIntegrationConstruct } from './constructs/httpLambdaIntegration';
+import { CognitoConstruct } from './constructs/cognito';
+
+export interface AdminStackProps extends cdk.StackProps {
+  stackName: string;
+  stage: string;
+  ses_noreply_email: string;
+}
 
 export class AdminStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: Construct, id: string, props: AdminStackProps) {
     super(scope, id, props);
 
-    // The code that defines your stack goes here
+    const { env, stackName, stage, ses_noreply_email } = props;
 
-    // example resource
-    // const queue = new sqs.Queue(this, 'AdminQueue', {
-    //   visibilityTimeout: cdk.Duration.seconds(300)
-    // });
+    const { profileTable } = new DynamoDBConstruct(this, "DynamoDBConstruct", { stackName, stage });
+
+    const { userPool, userPoolClient } = new CognitoConstruct(this, "CognitoConstruct", { env, stackName, stage, ses_noreply_email });
+
+    const { httpApi, authorizer } = new HttpApiConstruct(this, "HttpApiConstruct", { userPool, userPoolClient, stackName, stage });
+
+    const { profileLambda } = new LambdasConstruct(this, "LambdasConstruct", { profileTable, stackName, stage });
+
+    new httpLambdaIntegrationConstruct(this, "httpLambdaIntegration", { httpApi, authorizer, profileLambda, stackName, stage });
+
+        new cdk.CfnOutput(this, 'Http Api URL', { value: httpApi.url!});
+    new cdk.CfnOutput(this, 'userPool ID', { value: userPool.userPoolId });
+    new cdk.CfnOutput(this, 'userPool Client ID', { value: userPoolClient.userPoolClientId });
   }
 }

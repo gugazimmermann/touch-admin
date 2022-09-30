@@ -1,14 +1,77 @@
-# Welcome to your CDK TypeScript project
+# Login and Profile
 
-This is a blank project for CDK development with TypeScript.
+## Tech Used
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+AWS CDK - DynamoDB, HttpAPI, Lambda, Cognito / TypeScript
 
-## Useful commands
+### How to build
 
-* `npm run build`   compile typescript to js
-* `npm run watch`   watch for changes and compile
-* `npm run test`    perform the jest unit tests
-* `cdk deploy`      deploy this stack to your default AWS account/region
-* `cdk diff`        compare deployed stack with current state
-* `cdk synth`       emits the synthesized CloudFormation template
+* Have AWS CLI <https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html>
+* Have AWS CDK CLI <https://docs.aws.amazon.com/cdk/v2/guide/work-with.html#work-with-prerequisites>
+* run `make build` to compile typescript
+* run `make diff` to see the cloud changes
+* run `make deploy` to send cloud changes
+* run `make destroy` to remove cloud changes
+
+### Useful Cognito Commands
+
+See `./cdk-outputs.json`
+
+Create a Cognito User
+
+```bash
+aws cognito-idp admin-create-user \
+  --user-pool-id YOUR_USER_POOL_ID \
+  --username name@example.com \
+  --user-attributes Name="locale",Value="pt-BR"
+```
+
+Add Password
+
+```bash
+aws cognito-idp admin-set-user-password \
+  --user-pool-id YOUR_USER_POOL_ID \
+  --username name@example.com \
+  --password SET_NEW_PASSWORD \
+  --permanent
+```
+
+Verify Email
+
+```bash
+aws cognito-idp admin-update-user-attributes \
+  --user-pool-id YOUR_USER_POOL_ID \
+  --username name@example.com \
+  --user-attributes Name="email_verified",Value="true"
+```
+
+Login
+
+```bash
+aws cognito-idp initiate-auth \
+  --auth-flow USER_PASSWORD_AUTH \
+  --auth-parameters \
+  USERNAME="name@example.com",PASSWORD="password123" \
+  --client-id YOUR_USER_POOL_CLIENT_ID
+
+```
+
+The result will be:
+
+```bash
+{
+  "ChallengeParameters": {},
+  "AuthenticationResult": {
+    "AccessToken": "ACCESS_TOKEN",
+    "ExpiresIn": 3600,
+    "TokenType": "Bearer",
+    "RefreshToken": "REFRESH_TOKEN",
+    "IdToken": "ID_TOKEN"
+  }
+}
+
+```
+
+The `IdToken` will be used to test the API.
+
+Using PostMan need to set in `Authorization` tab type Bearer Token and put the `IdToken`.
