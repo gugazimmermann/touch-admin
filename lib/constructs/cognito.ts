@@ -28,6 +28,10 @@ export class CognitoConstruct extends Construct {
         requireUppercase: true,
         requireSymbols: false,
       },
+      deviceTracking: {
+        challengeRequiredOnNewDevice: false,
+        deviceOnlyRememberedOnUserPrompt: true,
+      },
       accountRecovery: AccountRecovery.EMAIL_ONLY,
       removalPolicy: RemovalPolicy.DESTROY,
     });
