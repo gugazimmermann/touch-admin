@@ -46,7 +46,7 @@ export class httpLambdaIntegrationConstruct extends Construct {
 
     props.httpApi.addRoutes({
       authorizer: props.authorizer,
-      path: '/profiles',
+      path: '/profiles/{profileID}',
       methods: [HttpMethod.PATCH],
       integration: new HttpLambdaIntegration('profiles-patch-integration', props.profileLambda)
     });

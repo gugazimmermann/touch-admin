@@ -6,13 +6,17 @@ const db = new AWS.DynamoDB.DocumentClient();
 
 const profilePatch = async (event: APIGatewayProxyEventV2, requestID: string, TableName: string): Promise<APIGatewayProxyResultV2> => {
   
+  const profileID = event?.pathParameters && event.pathParameters?.profileID;
+
+  if (!profileID) return commonResponse(400, JSON.stringify({ message: 'Missing Data', requestID}))
+
   const body = event?.body ? JSON.parse(event.body) : null;
 
-  if (!body || !body.profileID || !body.email) return commonResponse(400, JSON.stringify({ message: 'Missing Data', requestID}))
+  if (!body || !body.email) return commonResponse(400, JSON.stringify({ message: 'Missing Data', requestID}))
 
   const queryParams = {
     TableName,
-    Key: { profileID: body.profileID },
+    Key: { profileID },
     ProjectionExpression: "#email",
     ExpressionAttributeNames: { "#email": "email" },
   };
@@ -29,7 +33,7 @@ const profilePatch = async (event: APIGatewayProxyEventV2, requestID: string, Ta
 
   const params = {
     TableName,
-    Key: { profileID: body.profileID },
+    Key: { profileID },
     UpdateExpression: "set #email = :email, #updatedAt = :updatedAt",
     ExpressionAttributeValues: { ":email": body.email, ":updatedAt": dateNow },
     ExpressionAttributeNames: {"#email": "email", "#updatedAt": "updatedAt" },
