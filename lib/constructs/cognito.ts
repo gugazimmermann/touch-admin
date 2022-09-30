@@ -1,4 +1,4 @@
-import { Environment, RemovalPolicy, Stack } from "aws-cdk-lib";
+import { Environment, RemovalPolicy } from "aws-cdk-lib";
 import { AccountRecovery, CfnUserPool, ClientAttributes, StringAttribute, UserPool, UserPoolClient, UserPoolClientIdentityProvider } from "aws-cdk-lib/aws-cognito";
 import { Construct } from "constructs";
 
@@ -20,6 +20,7 @@ export class CognitoConstruct extends Construct {
       selfSignUpEnabled: true,
       signInAliases: { email: true },
       autoVerify: { email: true },
+      standardAttributes: { email: { required: true, mutable: true }},
       customAttributes: { locale: new StringAttribute({ mutable: true }) },
       passwordPolicy: {
         minLength: 6,
@@ -42,13 +43,14 @@ export class CognitoConstruct extends Construct {
       sourceArn: `arn:aws:ses:${props?.env?.region}:${props?.env?.account}:identity/${props.ses_noreply_email}`,
     };
 
-    const clientReadAttributes = new ClientAttributes().withStandardAttributes({ locale: true });
-    const clientWriteAttributes = new ClientAttributes().withStandardAttributes({ locale: true });
+    const clientReadAttributes = new ClientAttributes().withStandardAttributes({ email: true, locale: true });
+    const clientWriteAttributes = new ClientAttributes().withStandardAttributes({ email: true, locale: true });
 
     this.userPoolClient = new UserPoolClient(scope, `${props.stackName}-CognitoUserPoolClient-${props.stage}`, {
       userPool: this.userPool,
       authFlows: {
-        userPassword: true
+        userPassword: true,
+        userSrp: true,
       },
       supportedIdentityProviders: [ UserPoolClientIdentityProvider.COGNITO ],
       readAttributes: clientReadAttributes,
