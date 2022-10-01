@@ -23,7 +23,7 @@ const profilePut = async (
     TableName,
     Key: { profileID: body.profileID },
     UpdateExpression:
-      "set #phone = :phone, #name = :name, #documenttype = :documenttype, #document = :document, #zipCode = :zipCode, #state = :state, #city = :city, #district = :district, #street = :street, #number = :number, #complement = :complement, #logo = :logo, #map = :map, #updatedAt = :updatedAt",
+      "set #phone = :phone, #name = :name, #documenttype = :documenttype, #document = :document, #zipCode = :zipCode, #state = :state, #city = :city, #district = :district, #street = :street, #number = :number, #complement = :complement, #website = :website, #logo = :logo, #map = :map, #updatedAt = :updatedAt",
     ExpressionAttributeValues: {
       ":phone": body.phone,
       ":name": body.name,
@@ -36,6 +36,7 @@ const profilePut = async (
       ":street": body.street,
       ":number": body.number,
       ":complement": body.complement,
+      ":website": body.website,
       ":logo": body.logo,
       ":map": body.map,
       ":updatedAt": dateNow,
@@ -52,6 +53,7 @@ const profilePut = async (
       "#street": "street",
       "#number": "number",
       "#complement": "complement",
+      "#website": "website",
       "#logo": "logo",
       "#map": "map",
       "#updatedAt": "updatedAt",
