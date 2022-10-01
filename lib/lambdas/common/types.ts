@@ -12,7 +12,8 @@ export type ProfileType = {
   street?: string;
   number?: string;
   complement?: string;
-  avatar?: string;
+  logo?: string;
+  map?: string;
   createdAt?: string;
   updatedAt?: string;
 }

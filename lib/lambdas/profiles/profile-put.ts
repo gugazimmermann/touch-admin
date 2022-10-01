@@ -4,30 +4,71 @@ import commonResponse from "../common/commonResponse";
 
 const db = new AWS.DynamoDB.DocumentClient();
 
-const profilePut = async (event: APIGatewayProxyEventV2, requestID: string, TableName: string): Promise<APIGatewayProxyResultV2> => {
-  
+const profilePut = async (
+  event: APIGatewayProxyEventV2,
+  requestID: string,
+  TableName: string
+): Promise<APIGatewayProxyResultV2> => {
   const body = event?.body ? JSON.parse(event.body) : null;
 
-  if (!body || !body.profileID || !body.email) return commonResponse(400, JSON.stringify({ message: 'Missing Data', requestID}))
+  if (!body || !body.profileID || !body.email)
+    return commonResponse(
+      400,
+      JSON.stringify({ message: "Missing Data", requestID })
+    );
 
   const dateNow = Date.now().toString();
 
   const params = {
     TableName,
     Key: { profileID: body.profileID },
-    UpdateExpression: "set #email = :email, #updatedAt = :updatedAt",
-    ExpressionAttributeValues: { ":email": body.email, ":updatedAt": dateNow },
-    ExpressionAttributeNames: {"#email": "email", "#updatedAt": "updatedAt" },
+    UpdateExpression:
+      "set #phone = :phone, #name = :name, #documenttype = :documenttype, #document = :document, #zipCode = :zipCode, #state = :state, #city = :city, #district = :district, #street = :street, #number = :number, #complement = :complement, #logo = :logo, #map = :map, #updatedAt = :updatedAt",
+    ExpressionAttributeValues: {
+      ":phone": body.phone,
+      ":name": body.name,
+      ":documenttype": body.documenttype,
+      ":document": body.document,
+      ":zipCode": body.zipCode,
+      ":state": body.state,
+      ":city": body.city,
+      ":district": body.district,
+      ":street": body.street,
+      ":number": body.number,
+      ":complement": body.complement,
+      ":logo": body.logo,
+      ":map": body.map,
+      ":updatedAt": dateNow,
+    },
+    ExpressionAttributeNames: {
+      "#phone": "phone",
+      "#name": "name",
+      "#documenttype": "documenttype",
+      "#document": "document",
+      "#zipCode": "zipCode",
+      "#state": "state",
+      "#city": "city",
+      "#district": "district",
+      "#street": "street",
+      "#number": "number",
+      "#complement": "complement",
+      "#logo": "logo",
+      "#map": "map",
+      "#updatedAt": "updatedAt",
+    },
     ReturnValues: "ALL_NEW",
   };
   console.debug(`params`, JSON.stringify(params, undefined, 2));
-  
+
   try {
     const res = await db.update(params).promise();
-    return commonResponse(200, JSON.stringify({ data: res.Attributes, requestID }));
+    return commonResponse(
+      200,
+      JSON.stringify({ data: res.Attributes, requestID })
+    );
   } catch (error) {
     console.error(`error`, JSON.stringify(error, undefined, 2));
-    return commonResponse(500, JSON.stringify({ error, requestID}));
+    return commonResponse(500, JSON.stringify({ error, requestID }));
   }
 };
 
