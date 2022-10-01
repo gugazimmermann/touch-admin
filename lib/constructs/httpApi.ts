@@ -30,7 +30,12 @@ export class HttpApiConstruct extends Construct {
           CorsHttpMethod.DELETE,
         ],
         allowCredentials: true,
-        allowOrigins: ['http://localhost:3000', 'https://wwww.touchsistemas.com.br', 'https://touchsistemas.com.br'],
+        allowOrigins: [
+          'http://localhost:3000',
+          'https://wwww.touchsistemas.com.br',
+          'https://touchsistemas.com.br',
+          'https://admin.touchsistemas.com.br'
+        ],
       },
     });
 
