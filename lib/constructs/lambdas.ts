@@ -5,16 +5,24 @@ import { join } from "path";
 import commonLambdaProps from "./common/commonLambdaProps";
 
 type LambdasConstructProps = {
+  plansTable: Table;
   profileTable: Table;
   stackName: string;
   stage: string;
 };
 
 export class LambdasConstruct extends Construct {
+  public readonly plansLambda: NodejsFunction;
   public readonly profileLambda: NodejsFunction;
 
   constructor(scope: Construct, id: string, props: LambdasConstructProps) {
     super(scope, id);
+
+    this.plansLambda = new NodejsFunction(scope, "PlansLambda", {
+      entry: join(__dirname, "..", "lambdas", "plans.ts"), ...commonLambdaProps
+    });
+    props.plansTable.grantReadData(this.plansLambda);
+    this.plansLambda.addEnvironment("TABLE_NAME", props.plansTable.tableName)
 
     this.profileLambda = new NodejsFunction(scope, "ProfileLambda", {
       entry: join(__dirname, "..", "lambdas", "profile.ts"), ...commonLambdaProps

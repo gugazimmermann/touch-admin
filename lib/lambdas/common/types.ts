@@ -4,3 +4,4 @@ export type ProfileType = {
   createdAt?: string;
   updatedAt?: string;
 }
+

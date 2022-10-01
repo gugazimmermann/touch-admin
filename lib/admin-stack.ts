@@ -18,17 +18,18 @@ export class AdminStack extends cdk.Stack {
 
     const { env, stackName, stage, ses_noreply_email } = props;
 
-    const { profileTable } = new DynamoDBConstruct(this, "DynamoDBConstruct", { stackName, stage });
+    const { plansTable, profileTable } = new DynamoDBConstruct(this, "DynamoDBConstruct", { stackName, stage });
 
     const { userPool, userPoolClient } = new CognitoConstruct(this, "CognitoConstruct", { env, stackName, stage, ses_noreply_email });
 
     const { httpApi, authorizer } = new HttpApiConstruct(this, "HttpApiConstruct", { userPool, userPoolClient, stackName, stage });
 
-    const { profileLambda } = new LambdasConstruct(this, "LambdasConstruct", { profileTable, stackName, stage });
+    const { plansLambda, profileLambda } = new LambdasConstruct(this, "LambdasConstruct", { plansTable, profileTable, stackName, stage });
 
-    new httpLambdaIntegrationConstruct(this, "httpLambdaIntegration", { httpApi, authorizer, profileLambda, stackName, stage });
+    new httpLambdaIntegrationConstruct(this, "httpLambdaIntegration", { httpApi, authorizer, plansLambda, profileLambda, stackName, stage });
 
-        new cdk.CfnOutput(this, 'Http Api URL', { value: httpApi.url!});
+    new cdk.CfnOutput(this, 'Plans Table Name', { value: plansTable.tableName});
+    new cdk.CfnOutput(this, 'Http Api URL', { value: httpApi.url!});
     new cdk.CfnOutput(this, 'userPool ID', { value: userPool.userPoolId });
     new cdk.CfnOutput(this, 'userPool Client ID', { value: userPoolClient.userPoolClientId });
   }

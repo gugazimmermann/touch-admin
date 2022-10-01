@@ -8,20 +8,23 @@ type DynamoDBConstructProps = {
 };
 
 export class DynamoDBConstruct extends Construct {
+  public readonly plansTable: Table;
   public readonly profileTable: Table;
 
   constructor(scope: Construct, id: string, props: DynamoDBConstructProps) {
     super(scope, id);
 
-    this.profileTable = new Table(
-      scope,
-      "ProfileTable",
-      {
-        partitionKey: { name: "profileID", type: AttributeType.STRING },
-        billingMode: BillingMode.PAY_PER_REQUEST,
-        removalPolicy: RemovalPolicy.DESTROY,
-      }
-    );
+    this.plansTable = new Table(scope, "PlansTable", {
+      partitionKey: { name: "planID", type: AttributeType.STRING },
+      billingMode: BillingMode.PAY_PER_REQUEST,
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
+
+    this.profileTable = new Table(scope, "ProfileTable", {
+      partitionKey: { name: "profileID", type: AttributeType.STRING },
+      billingMode: BillingMode.PAY_PER_REQUEST,
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
     this.profileTable.addGlobalSecondaryIndex({
       indexName: "byEmail",
       partitionKey: { name: "email", type: AttributeType.STRING },

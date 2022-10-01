@@ -7,6 +7,7 @@ import { Construct } from "constructs";
 type httpLambdaIntegrationConstructProps = {
   httpApi: HttpApi;
   authorizer: HttpUserPoolAuthorizer;
+  plansLambda: NodejsFunction;
   profileLambda: NodejsFunction;
   stackName: string;
   stage: string;
@@ -15,6 +16,12 @@ type httpLambdaIntegrationConstructProps = {
 export class httpLambdaIntegrationConstruct extends Construct {
   constructor(scope: Construct, id: string, props: httpLambdaIntegrationConstructProps) {
     super(scope, id);
+
+    props.httpApi.addRoutes({
+      path: '/plans',
+      methods: [HttpMethod.GET],
+      integration: new HttpLambdaIntegration(`plans-get-integration`, props.plansLambda)
+    });
 
     props.httpApi.addRoutes({
       authorizer: props.authorizer,
