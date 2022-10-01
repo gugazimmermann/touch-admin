@@ -1,8 +1,8 @@
 import AWS = require("aws-sdk");
 import {
-  APIGatewayProxyEventV2,
+  APIGatewayEvent,
   Context,
-  APIGatewayProxyResultV2,
+  APIGatewayProxyResult,
 } from "aws-lambda";
 import { v4 as uuidv4 } from 'uuid';
 import commonResponse from "./common/commonResponse";
@@ -12,7 +12,7 @@ const TABLE_NAME = process.env.TABLE_NAME || "";
 
 const db = new AWS.DynamoDB.DocumentClient();
 
-export const handler = async (event: APIGatewayProxyEventV2, context: Context ): Promise<APIGatewayProxyResultV2> => {
+export const handler = async (event: APIGatewayEvent, context: Context ): Promise<APIGatewayProxyResult> => {
   console.debug(`event`, JSON.stringify(event, undefined, 2));
 
   const paramsScan = { TableName: TABLE_NAME };
