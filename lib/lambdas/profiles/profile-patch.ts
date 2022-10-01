@@ -1,10 +1,10 @@
 import AWS = require("aws-sdk");
-import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from "aws-lambda";
+import { APIGatewayEvent, APIGatewayProxyResult } from "aws-lambda";
 import commonResponse from "../common/commonResponse";
 
 const db = new AWS.DynamoDB.DocumentClient();
 
-const profilePatch = async (event: APIGatewayProxyEventV2, requestID: string, TableName: string): Promise<APIGatewayProxyResultV2> => {
+const profilePatch = async (event: APIGatewayEvent, requestID: string, TableName: string): Promise<APIGatewayProxyResult> => {
   
   const profileID = event?.pathParameters && event.pathParameters?.profileID;
 
