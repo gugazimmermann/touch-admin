@@ -25,10 +25,5 @@ export class DynamoDBConstruct extends Construct {
       billingMode: BillingMode.PAY_PER_REQUEST,
       removalPolicy: RemovalPolicy.DESTROY,
     });
-    this.profileTable.addGlobalSecondaryIndex({
-      indexName: "byEmail",
-      partitionKey: { name: "email", type: AttributeType.STRING },
-      projectionType: ProjectionType.ALL,
-    });
   }
 }
