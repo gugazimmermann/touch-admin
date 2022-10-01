@@ -9,7 +9,7 @@ const getOne = async (profileID: string, requestID: string, TableName: string): 
   console.debug(`params`, JSON.stringify(params, undefined, 2));
   try {
     const res = await db.get(params).promise();
-    return commonResponse(200, JSON.stringify({ data: res.Item, requestID }));
+    return commonResponse(200, JSON.stringify({ data: res.Item || {}, requestID }));
   } catch (error) {
     console.error(`error`, JSON.stringify(error, undefined, 2));
     return commonResponse(500, JSON.stringify({ error, requestID}));
