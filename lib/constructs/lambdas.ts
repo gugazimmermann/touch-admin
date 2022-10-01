@@ -14,6 +14,7 @@ type LambdasConstructProps = {
 export class LambdasConstruct extends Construct {
   public readonly plansLambda: NodejsFunction;
   public readonly profileLambda: NodejsFunction;
+  public readonly profileOwnersLambda: NodejsFunction;
 
   constructor(scope: Construct, id: string, props: LambdasConstructProps) {
     super(scope, id);
@@ -29,5 +30,11 @@ export class LambdasConstruct extends Construct {
     });
     props.profileTable.grantReadWriteData(this.profileLambda);
     this.profileLambda.addEnvironment("TABLE_NAME", props.profileTable.tableName)
+
+    this.profileOwnersLambda = new NodejsFunction(scope, "ProfileOwnersLambda", {
+      entry: join(__dirname, "..", "lambdas", "profile-owners.ts"), ...commonLambdaProps
+    });
+    props.profileTable.grantReadWriteData(this.profileOwnersLambda);
+    this.profileOwnersLambda.addEnvironment("TABLE_NAME", props.profileTable.tableName)
   }
 }

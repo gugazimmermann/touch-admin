@@ -9,6 +9,7 @@ type httpLambdaIntegrationConstructProps = {
   authorizer: HttpUserPoolAuthorizer;
   plansLambda: NodejsFunction;
   profileLambda: NodejsFunction;
+  profileOwnersLambda: NodejsFunction;
   stackName: string;
   stage: string;
 };
@@ -63,6 +64,13 @@ export class httpLambdaIntegrationConstruct extends Construct {
       path: '/profiles/{profileID}',
       methods: [HttpMethod.DELETE],
       integration: new HttpLambdaIntegration('profiles-delete-integration', props.profileLambda)
+    });
+
+    props.httpApi.addRoutes({
+      authorizer: props.authorizer,
+      path: '/profiles/{profileID}/owners',
+      methods: [HttpMethod.PATCH],
+      integration: new HttpLambdaIntegration('profiles-patch-owners-integration', props.profileLambda)
     });
   }
 }

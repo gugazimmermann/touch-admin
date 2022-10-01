@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { ProfileType } from "../common/types";
 import commonResponse from "../common/commonResponse";
 
-const db = new AWS.DynamoDB.DocumentClient();
+const db = new AWS.DynamoDB.DocumentClient({ convertEmptyValues: true });
 
 const profilePost = async (event: APIGatewayProxyEventV2, requestID: string, TableName: string): Promise<APIGatewayProxyResultV2> => {
   
@@ -16,6 +16,7 @@ const profilePost = async (event: APIGatewayProxyEventV2, requestID: string, Tab
   const profile: ProfileType = {
     profileID:  body.profileID,
     email: body.email,
+    owners: [],
     createdAt: dateNow,
     updatedAt: dateNow
   };

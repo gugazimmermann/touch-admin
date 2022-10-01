@@ -12,8 +12,19 @@ export type ProfileType = {
   street?: string;
   number?: string;
   complement?: string;
+  website?: string;
   logo?: string;
   map?: string;
+  owners?: OwnerType[];
   createdAt?: string;
   updatedAt?: string;
+}
+
+export type OwnerType = {
+  ownerID: string;
+  name: string;
+  email: string;
+  phone: string;
+  createdAt: string;
+  updatedAt: string;
 }
