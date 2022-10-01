@@ -10,11 +10,11 @@ const profilePost = async (event: APIGatewayProxyEventV2, requestID: string, Tab
   
   const body = event?.body ? JSON.parse(event.body) : null;
 
-  if (!body || !body.email) return commonResponse(400, JSON.stringify({ message: 'Missing Data', requestID}))
+  if (!body || !body.profileID || !body.email) return commonResponse(400, JSON.stringify({ message: 'Missing Data', requestID}))
 
   const dateNow = Date.now().toString();
   const profile: ProfileType = {
-    profileID: uuidv4(),
+    profileID:  body.profileID,
     email: body.email,
     createdAt: dateNow,
     updatedAt: dateNow
