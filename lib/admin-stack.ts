@@ -24,14 +24,13 @@ export class AdminStack extends cdk.Stack {
 
     const { restApi, authorizer } = new RestApiConstruct(this, "RestApiConstruct", { userPool, stackName, stage });
 
-    const { plansLambda, profileLambda, profileOwnersLambda } = new LambdasConstruct(this, "LambdasConstruct", { plansTable, profileTable, stackName, stage });
+    const { plansLambda, profileLambda } = new LambdasConstruct(this, "LambdasConstruct", { plansTable, profileTable, stackName, stage });
 
     new RestAPIResourcesConstruct(this, "RestAPIResourcesConstruct", {
       restApi,
       authorizer,
       plansLambda,
       profileLambda,
-      profileOwnersLambda,
       stackName,
       stage,
     });
