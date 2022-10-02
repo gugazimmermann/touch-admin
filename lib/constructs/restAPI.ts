@@ -1,5 +1,6 @@
 import {
   CognitoUserPoolsAuthorizer,
+  MethodLoggingLevel,
   RestApi,
 } from "aws-cdk-lib/aws-apigateway";
 import { UserPool } from "aws-cdk-lib/aws-cognito";
@@ -27,6 +28,8 @@ export class RestApiConstruct extends Construct {
           stageName: "dev",
           dataTraceEnabled: true,
           tracingEnabled: true,
+          metricsEnabled: true,
+          loggingLevel: MethodLoggingLevel.INFO,
         },
         defaultCorsPreflightOptions: {
           allowHeaders: ["Content-Type",  "X-Amz-Date", "Authorization", "X-Api-Key"],
