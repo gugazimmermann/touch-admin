@@ -48,6 +48,7 @@ export class CognitoConstruct extends Construct {
 
     this.userPoolClient = new UserPoolClient(scope, `${props.stackName}-CognitoUserPoolClient-${props.stage}`, {
       idTokenValidity: Duration.days(1),
+      refreshTokenValidity: Duration.days(365),
       userPool: this.userPool,
       authFlows: {
         userPassword: true,
