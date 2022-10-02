@@ -42,7 +42,7 @@ const patchEmail = async (db: DocumentClient, profileID: string, email: string, 
 
 const patchOwers = async (db: DocumentClient, profileID: string, body: OwnerType, requestID: string, TableName: string): Promise<APIGatewayProxyResult> => {
   if (!body || !body.name || !body.email || !body.phone) return commonResponse(400, JSON.stringify({ message: 'Missing Data', requestID}))
-  const ownersList: OwnerType[] = [];
+  let ownersList: OwnerType[] = [];
   const queryParams = {
     TableName,
     Key: { profileID },
@@ -64,6 +64,18 @@ const patchOwers = async (db: DocumentClient, profileID: string, body: OwnerType
       phone: body.phone,
       createdAt: dateNow,
       updatedAt: dateNow
+    })
+  } else if (body.ownerID && !body.name) {
+    ownersList = ownersList.filter(o => o.ownerID !== body.ownerID);
+  } else {
+    ownersList = ownersList.map(o => {
+      if (o.ownerID === body.ownerID) {
+        o.name = body.name,
+        o.email = body.email,
+        o.phone = body.phone,
+        o.updatedAt = dateNow
+      }
+      return o
     })
   }
   const params = {
