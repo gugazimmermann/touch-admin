@@ -1,10 +1,12 @@
 import AWS = require("aws-sdk");
 import { APIGatewayEvent, APIGatewayProxyResult } from "aws-lambda";
 import commonResponse from "../common/commonResponse";
+import { DocumentClient } from "aws-sdk/lib/dynamodb/document_client";
 
 const db = new AWS.DynamoDB.DocumentClient();
 
 const profilePut = async (
+  db: DocumentClient,
   event: APIGatewayEvent,
   requestID: string,
   TableName: string

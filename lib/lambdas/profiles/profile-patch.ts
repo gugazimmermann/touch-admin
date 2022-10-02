@@ -3,11 +3,11 @@ import { APIGatewayEvent, APIGatewayProxyResult } from "aws-lambda";
 import { v4 as uuidv4 } from 'uuid';
 import commonResponse from "../common/commonResponse";
 import { OwnerType } from '../common/types';
+import { DocumentClient } from "aws-sdk/lib/dynamodb/document_client";
 
-const db = new AWS.DynamoDB.DocumentClient();
 const dateNow = Date.now().toString();
 
-const patchEmail = async (profileID: string, email: string, requestID: string, TableName: string): Promise<APIGatewayProxyResult> => {
+const patchEmail = async (db: DocumentClient, profileID: string, email: string, requestID: string, TableName: string): Promise<APIGatewayProxyResult> => {
   const queryParams = {
     TableName,
     Key: { profileID },
@@ -40,7 +40,7 @@ const patchEmail = async (profileID: string, email: string, requestID: string, T
   }
 }
 
-const patchOwers = async (profileID: string, body: OwnerType, requestID: string, TableName: string): Promise<APIGatewayProxyResult> => {
+const patchOwers = async (db: DocumentClient, profileID: string, body: OwnerType, requestID: string, TableName: string): Promise<APIGatewayProxyResult> => {
   if (!body || !body.name || !body.email || !body.phone) return commonResponse(400, JSON.stringify({ message: 'Missing Data', requestID}))
   const ownersList: OwnerType[] = [];
   const queryParams = {
@@ -84,13 +84,13 @@ const patchOwers = async (profileID: string, body: OwnerType, requestID: string,
   }
 }
 
-const profilePatch = async (event: APIGatewayEvent, requestID: string, TableName: string): Promise<APIGatewayProxyResult> => {
+const profilePatch = async (db: DocumentClient, event: APIGatewayEvent, requestID: string, TableName: string): Promise<APIGatewayProxyResult> => {
   const profileID = event?.pathParameters && event.pathParameters?.profileID;
   if (!profileID) return commonResponse(400, JSON.stringify({ message: 'Missing Data', requestID}))
   const body = event?.body ? JSON.parse(event.body) : null;
   if (!body || !body.email) return commonResponse(400, JSON.stringify({ message: 'Missing Data', requestID}))
-  if (event.resource.includes('owners')) return patchOwers(profileID, body, requestID, TableName);
-  else return patchEmail(profileID, body.email, requestID, TableName); 
+  if (event.resource.includes('owners')) return patchOwers(db, profileID, body, requestID, TableName);
+  else return patchEmail(db, profileID, body.email, requestID, TableName); 
 };
 
 export default profilePatch;
