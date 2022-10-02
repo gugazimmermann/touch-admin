@@ -1,4 +1,4 @@
-import { Environment, RemovalPolicy } from "aws-cdk-lib";
+import { Duration, Environment, RemovalPolicy } from "aws-cdk-lib";
 import { AccountRecovery, CfnUserPool, ClientAttributes, StringAttribute, UserPool, UserPoolClient, UserPoolClientIdentityProvider } from "aws-cdk-lib/aws-cognito";
 import { Construct } from "constructs";
 
@@ -47,6 +47,7 @@ export class CognitoConstruct extends Construct {
     const clientWriteAttributes = new ClientAttributes().withStandardAttributes({ email: true, locale: true });
 
     this.userPoolClient = new UserPoolClient(scope, `${props.stackName}-CognitoUserPoolClient-${props.stage}`, {
+      idTokenValidity: Duration.days(1),
       userPool: this.userPool,
       authFlows: {
         userPassword: true,
