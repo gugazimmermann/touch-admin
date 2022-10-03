@@ -1,5 +1,6 @@
 import { Duration, RemovalPolicy } from "aws-cdk-lib";
-import { Bucket, HttpMethods, StorageClass } from "aws-cdk-lib/aws-s3";
+import { Effect, PolicyStatement, StarPrincipal } from "aws-cdk-lib/aws-iam";
+import { Bucket, BucketPolicy, HttpMethods, StorageClass } from "aws-cdk-lib/aws-s3";
 import { Construct } from "constructs";
 
 type S3ConstructProps = {
@@ -14,9 +15,7 @@ export class S3Construct extends Construct {
   constructor(scope: Construct, id: string, props: S3ConstructProps) {
     super(scope, id);
 
-    this.logoAndMapsBucket = new Bucket(this, 'MyBucket', {
-      versioned: false,
-      publicReadAccess: true,
+    this.logoAndMapsBucket = new Bucket(scope, `${props.stackName}-LogoAndMapsBucket-${props.stage}`, {
       autoDeleteObjects: true,
       removalPolicy: RemovalPolicy.DESTROY,
       lifecycleRules: [
@@ -42,5 +41,19 @@ export class S3Construct extends Construct {
         },
       ],
     });
+
+    const logoAndMapsBucketPolicy = new BucketPolicy(scope, `${props.stackName}-LogoAndMapsBucketPolicy-${props.stage}`, {
+      bucket: this.logoAndMapsBucket
+    });
+
+    logoAndMapsBucketPolicy.document.addStatements(
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        principals: [new StarPrincipal()],
+        actions: ['s3:GetObject'],
+        resources: [`${this.logoAndMapsBucket.bucketArn}/public/*`],
+      }),
+    );
+
   }
 }
