@@ -1,6 +1,6 @@
-import { Duration, Environment, RemovalPolicy, Stack } from "aws-cdk-lib";
-import { AccountRecovery, CfnIdentityPool, CfnIdentityPoolRoleAttachment, CfnUserPool, ClientAttributes, StringAttribute, UserPool, UserPoolClient, UserPoolClientIdentityProvider } from "aws-cdk-lib/aws-cognito";
-import { FederatedPrincipal, ManagedPolicy, Role } from "aws-cdk-lib/aws-iam";
+import { Duration, Environment, RemovalPolicy } from "aws-cdk-lib";
+import { AccountRecovery, CfnIdentityPool, CfnUserPool, ClientAttributes, StringAttribute, UserPool, UserPoolClient, UserPoolClientIdentityProvider } from "aws-cdk-lib/aws-cognito";
+import { Role } from "aws-cdk-lib/aws-iam";
 import { Construct } from "constructs";
 
 type CognitoConstructProps = {
