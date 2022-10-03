@@ -49,13 +49,14 @@ const patchOwers = async (db: DocumentClient, profileID: string, body: OwnerType
     ProjectionExpression: "#owners",
     ExpressionAttributeNames: { "#owners": "owners" },
   };
-  console.debug(`queryParams`, JSON.stringify(queryParams, undefined, 2));
   try {
     const queryResponse = await db.get(queryParams).promise();
-    (queryResponse.Item || []).forEach((i: OwnerType) => ownersList.push(i));
+    console.debug(`queryResponse`, JSON.stringify(queryResponse.Item?.owners, undefined, 2));
+    (queryResponse.Item?.owners || []).forEach((i: OwnerType) => ownersList.push(i));
   } catch (error) {
     console.error(`error get`, JSON.stringify(error, undefined, 2));
   }
+
   if (!body.ownerID && body.name) {
     ownersList.push({
       ownerID: uuidv4(),
@@ -78,6 +79,7 @@ const patchOwers = async (db: DocumentClient, profileID: string, body: OwnerType
       return o
     })
   }
+  console.debug(`ownersList`, JSON.stringify(ownersList, undefined, 2));
   const params = {
     TableName,
     Key: { profileID },
