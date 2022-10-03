@@ -12,6 +12,7 @@ import { Construct } from "constructs";
 
 type RestApiConstructProps = {
   userPool: UserPool;
+  corsDomains: string[];
   stackName: string;
   stage: string;
 };
@@ -48,13 +49,7 @@ export class RestApiConstruct extends Construct {
           allowHeaders: ["Content-Type",  "X-Amz-Date", "Authorization", "X-Api-Key"],
           allowMethods: ["OPTIONS", "GET", "POST", "PUT", "PATCH", "DELETE"],
           allowCredentials: true,
-          allowOrigins: [
-            "http://localhost:3000",
-            "https://d1aewi60iom71h.cloudfront.net/",
-            "https://wwww.touchsistemas.com.br",
-            "https://touchsistemas.com.br",
-            "https://admin.touchsistemas.com.br",
-          ],
+          allowOrigins: props.corsDomains,
         },
       }
     );
