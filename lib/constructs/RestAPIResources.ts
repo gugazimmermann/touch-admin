@@ -27,6 +27,8 @@ export class RestAPIResourcesConstruct extends Construct {
     profileID.addMethod('GET', new LambdaIntegration(props.profileLambda), { authorizer: props.authorizer });
     profileID.addMethod('PATCH', new LambdaIntegration(props.profileLambda), { authorizer: props.authorizer });
     profileID.addMethod('DELETE', new LambdaIntegration(props.profileLambda), { authorizer: props.authorizer });
+    const logomap = profileID.addResource('logomap');
+    logomap.addMethod('PATCH', new LambdaIntegration(props.profileLambda), { authorizer: props.authorizer });
     const owners = profileID.addResource('owners');
     owners.addMethod('PATCH', new LambdaIntegration(props.profileLambda), { authorizer: props.authorizer });
   }
