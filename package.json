@@ -1,10 +1,15 @@
 {
-  "name": "admin",
-  "version": "0.1.0",
+  "name": "touchsistemas-admin",
+  "description": "Admin Infra as Code for Touch Sistemas",
+  "author": "Guga Zimmermann <gugazimmermann@gmail.com> (https://www.linkedin.com/in/guga-zimmermann/)",
+  "homepage": "",
+  "version": "0.0.1",
+  "private": true,
   "bin": {
     "admin": "bin/admin.js"
   },
   "scripts": {
+    "prebuild": "npm install && cd lib/lambdas && npm i && tsc && cd -",
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",
@@ -22,6 +27,8 @@
   },
   "dependencies": {
     "aws-cdk-lib": "2.44.0",
+    "aws-xray-sdk": "^3.3.8",
+    "aws-xray-sdk-core": "^3.3.8",
     "constructs": "^10.0.0",
     "source-map-support": "^0.5.21"
   }

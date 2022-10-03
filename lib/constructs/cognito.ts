@@ -1,5 +1,6 @@
-import { Environment, RemovalPolicy } from "aws-cdk-lib";
-import { AccountRecovery, CfnUserPool, ClientAttributes, StringAttribute, UserPool, UserPoolClient, UserPoolClientIdentityProvider } from "aws-cdk-lib/aws-cognito";
+import { Duration, Environment, RemovalPolicy } from "aws-cdk-lib";
+import { AccountRecovery, CfnIdentityPool, CfnUserPool, ClientAttributes, StringAttribute, UserPool, UserPoolClient, UserPoolClientIdentityProvider } from "aws-cdk-lib/aws-cognito";
+import { Role } from "aws-cdk-lib/aws-iam";
 import { Construct } from "constructs";
 
 type CognitoConstructProps = {
@@ -12,6 +13,9 @@ type CognitoConstructProps = {
 export class CognitoConstruct extends Construct {
   public readonly userPool: UserPool;
   public readonly userPoolClient: UserPoolClient
+  public readonly identityPool: CfnIdentityPool;
+  public readonly anonymousCognitoGroupRole: Role;
+  public readonly usersCognitoGroupRole: Role;
 
   constructor(scope: Construct, id: string, props: CognitoConstructProps) {
     super(scope, id);
@@ -20,7 +24,7 @@ export class CognitoConstruct extends Construct {
       selfSignUpEnabled: true,
       signInAliases: { email: true },
       autoVerify: { email: true },
-      standardAttributes: { email: { required: true, mutable: true }},
+      standardAttributes: { email: { required: true, mutable: true } },
       customAttributes: { locale: new StringAttribute({ mutable: true }) },
       passwordPolicy: {
         minLength: 6,
@@ -47,14 +51,26 @@ export class CognitoConstruct extends Construct {
     const clientWriteAttributes = new ClientAttributes().withStandardAttributes({ email: true, locale: true });
 
     this.userPoolClient = new UserPoolClient(scope, `${props.stackName}-CognitoUserPoolClient-${props.stage}`, {
+      idTokenValidity: Duration.days(1),
+      refreshTokenValidity: Duration.days(365),
       userPool: this.userPool,
       authFlows: {
         userPassword: true,
         userSrp: true,
       },
-      supportedIdentityProviders: [ UserPoolClientIdentityProvider.COGNITO ],
+      supportedIdentityProviders: [UserPoolClientIdentityProvider.COGNITO],
       readAttributes: clientReadAttributes,
       writeAttributes: clientWriteAttributes,
+    });
+
+    this.identityPool = new CfnIdentityPool(scope, `${props.stackName}-CognitoIdentityPool-${props.stage}`, {
+      allowUnauthenticatedIdentities: true,
+      cognitoIdentityProviders: [
+        {
+          clientId: this.userPoolClient.userPoolClientId,
+          providerName: this.userPool.userPoolProviderName,
+        },
+      ],
     });
   }
 }

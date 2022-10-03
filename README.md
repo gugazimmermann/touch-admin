@@ -75,3 +75,9 @@ The result will be:
 The `IdToken` will be used to test the API.
 
 Using PostMan need to set in `Authorization` tab type Bearer Token and put the `IdToken`.
+
+----
+
+Seed plans
+
+* run `aws dynamodb batch-write-item --request-items file://data/plans.json`
