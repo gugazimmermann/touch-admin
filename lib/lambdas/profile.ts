@@ -5,10 +5,10 @@ import {
   Context,
   APIGatewayProxyResult,
 } from "aws-lambda";
-import profileDelete from "./profiles/profile-delete";
-import profilePatch from "./profiles/profile-patch";
 import profilePost from "./profiles/profile-post";
 import profilePut from "./profiles/profile-put";
+import profilePatch from "./profiles/profile-patch";
+import profileDelete from "./profiles/profile-delete";
 import profileGet from './profiles/profile-get';
 
 const TABLE_NAME = process.env.TABLE_NAME || "";
