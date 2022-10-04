@@ -23,7 +23,7 @@ const sendCodeForgotPassword = (email: string, code: string): CustomMessageRespo
     emailMessage: `<p>Olá,</p>
   <br />
   <p>Seu código de recuperação de senha é:  <strong>${code}</strong></p>
-  <p>Digite seu código no campo informado ou clique aqui: <strong><a>${ADMIN_URL}redefinir-senha?email=${email}&code=${code}</a></strong></p>
+  <p>Digite seu código no campo informado ou clique aqui: <strong><a href="${ADMIN_URL}redefinir-senha?email=${email}&code=${code}">clique aqui</a></strong>.</p>
   `,
   };
 }
@@ -33,7 +33,7 @@ const sendCodeVerifyNewEmail = (code: string): CustomMessageResponse => {
     emailSubject: `${PROJECT_NAME} - Validação de Email`,
     emailMessage: `<p>Olá,</p>
   <br />
-  <p>Seu código de validação de senha é: ${code}</p>
+  <p>Seu código de validação de senha é: <strong>${code}</strong></p>
 `,
   };
 }
