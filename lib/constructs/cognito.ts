@@ -1,11 +1,13 @@
 import { Duration, Environment, RemovalPolicy } from "aws-cdk-lib";
 import { AccountRecovery, CfnIdentityPool, CfnUserPool, ClientAttributes, StringAttribute, UserPool, UserPoolClient, UserPoolClientIdentityProvider } from "aws-cdk-lib/aws-cognito";
 import { Role } from "aws-cdk-lib/aws-iam";
+import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { Construct } from "constructs";
 
 type CognitoConstructProps = {
   env: Environment | undefined;
   ses_noreply_email: string;
+  cognitoLambda: NodejsFunction;
   stackName: string;
   stage: string;
 };
@@ -36,6 +38,9 @@ export class CognitoConstruct extends Construct {
       deviceTracking: {
         challengeRequiredOnNewDevice: false,
         deviceOnlyRememberedOnUserPrompt: true,
+      },
+      lambdaTriggers: {
+        customMessage: props.cognitoLambda
       },
       accountRecovery: AccountRecovery.EMAIL_ONLY,
       removalPolicy: RemovalPolicy.DESTROY,

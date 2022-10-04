@@ -24,14 +24,14 @@ export class AdminStack extends cdk.Stack {
     const { plansTable, profileTable } = new DynamoDBConstruct(this, "DynamoDBConstruct", { stackName, stage });
 
     const { logoAndMapsBucket } = new S3Construct(this, "S3Construct", { corsDomains, stackName, stage });
+
+    const { cognitoLambda, plansLambda, profileLambda } = new LambdasConstruct(this, "LambdasConstruct", { plansTable, profileTable, stackName, stage });
     
-    const { userPool, userPoolClient, identityPool } = new CognitoConstruct(this, "CognitoConstruct", { env, ses_noreply_email, stackName, stage });
+    const { userPool, userPoolClient, identityPool } = new CognitoConstruct(this, "CognitoConstruct", { env, ses_noreply_email, cognitoLambda, stackName, stage });
 
     new CognitoRolesConstruct(this, "CognitoRolesConstruct", {userPool, userPoolClient, identityPool, logoAndMapsBucket, stackName, stage });
 
     const { restApi, authorizer } = new RestApiConstruct(this, "RestApiConstruct", { userPool, corsDomains, stackName, stage });
-
-    const { plansLambda, profileLambda } = new LambdasConstruct(this, "LambdasConstruct", { plansTable, profileTable, stackName, stage });
 
     new RestAPIResourcesConstruct(this, "RestAPIResourcesConstruct", {
       restApi,

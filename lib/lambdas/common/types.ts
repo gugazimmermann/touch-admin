@@ -28,3 +28,8 @@ export type OwnerType = {
   createdAt: string;
   updatedAt: string;
 }
+
+export type CustomMessageResponse = {
+  emailSubject: string;
+  emailMessage: string;
+}
