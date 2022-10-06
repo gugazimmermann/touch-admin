@@ -21,11 +21,11 @@ export class AdminStack extends cdk.Stack {
 
     const { env, stackName, stage, ses_noreply_email } = props;
 
-    const { plansTable, profileTable } = new DynamoDBConstruct(this, "DynamoDBConstruct", { stackName, stage });
+    const { plansTable, profileTable, referralTable } = new DynamoDBConstruct(this, "DynamoDBConstruct", { stackName, stage });
 
     const { logoAndMapsBucket } = new S3Construct(this, "S3Construct", { corsDomains, stackName, stage });
 
-    const { cognitoLambda, plansLambda, profileLambda } = new LambdasConstruct(this, "LambdasConstruct", { plansTable, profileTable, stackName, stage });
+    const { cognitoLambda, plansLambda, profileLambda, referralsLambda } = new LambdasConstruct(this, "LambdasConstruct", { plansTable, profileTable, referralTable, stackName, stage });
     
     const { userPool, userPoolClient, identityPool } = new CognitoConstruct(this, "CognitoConstruct", { env, ses_noreply_email, cognitoLambda, stackName, stage });
 
@@ -38,11 +38,13 @@ export class AdminStack extends cdk.Stack {
       authorizer,
       plansLambda,
       profileLambda,
+      referralsLambda,
       stackName,
       stage,
     });
 
     new cdk.CfnOutput(this, "Plans Table Name", { value: plansTable.tableName });
+    new cdk.CfnOutput(this, "Referrals Table Name", { value: referralTable.tableName });
     new cdk.CfnOutput(this, "Logo And Maps Bucket", { value: logoAndMapsBucket.bucketName });
     new cdk.CfnOutput(this, "userPool ID", { value: userPool.userPoolId });
     new cdk.CfnOutput(this, "userPool Client ID", {

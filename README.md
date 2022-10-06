@@ -81,3 +81,8 @@ Using PostMan need to set in `Authorization` tab type Bearer Token and put the `
 Seed plans
 
 * run `aws dynamodb batch-write-item --request-items file://data/plans.json`
+
+Seed referral
+
+* run `aws dynamodb batch-write-item --request-items file://data/referral.json`
+  

@@ -7,6 +7,7 @@ type RestAPIResourcesConstructProps = {
   authorizer: CognitoUserPoolsAuthorizer;
   plansLambda: NodejsFunction;
   profileLambda: NodejsFunction;
+  referralsLambda: NodejsFunction;
   stackName: string;
   stage: string;
 };
@@ -31,5 +32,9 @@ export class RestAPIResourcesConstruct extends Construct {
     logomap.addMethod('PATCH', new LambdaIntegration(props.profileLambda), { authorizer: props.authorizer });
     const owners = profileID.addResource('owners');
     owners.addMethod('PATCH', new LambdaIntegration(props.profileLambda), { authorizer: props.authorizer });
+
+    const referrals = props.restApi.root.addResource('referrals');
+    const referralCode = referrals.addResource('{code}');
+    referralCode.addMethod('GET', new LambdaIntegration(props.referralsLambda), { authorizer: props.authorizer });
   }
 }

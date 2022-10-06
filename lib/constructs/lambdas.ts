@@ -7,6 +7,7 @@ import commonLambdaProps from "./common/commonLambdaProps";
 type LambdasConstructProps = {
   plansTable: Table;
   profileTable: Table;
+  referralTable: Table;
   stackName: string;
   stage: string;
 };
@@ -15,6 +16,7 @@ export class LambdasConstruct extends Construct {
   public readonly cognitoLambda: NodejsFunction;
   public readonly plansLambda: NodejsFunction;
   public readonly profileLambda: NodejsFunction;
+  public readonly referralsLambda: NodejsFunction;
 
   constructor(scope: Construct, id: string, props: LambdasConstructProps) {
     super(scope, id);
@@ -36,9 +38,13 @@ export class LambdasConstruct extends Construct {
       ...commonLambdaProps,
     });
     props.profileTable.grantReadWriteData(this.profileLambda);
-    this.profileLambda.addEnvironment(
-      "TABLE_NAME",
-      props.profileTable.tableName
-    );
+    this.profileLambda.addEnvironment("TABLE_NAME",  props.profileTable.tableName);
+
+    this.referralsLambda = new NodejsFunction(scope, "ReferralsLambda", {
+      entry: join(__dirname, "..", "lambdas", "referrals.ts"),
+      ...commonLambdaProps,
+    });
+    props.referralTable.grantReadData(this.referralsLambda);
+    this.referralsLambda.addEnvironment("TABLE_NAME", props.referralTable.tableName);
   }
 }
