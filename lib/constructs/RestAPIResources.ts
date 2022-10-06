@@ -23,7 +23,6 @@ export class RestAPIResourcesConstruct extends Construct {
     profiles.addMethod('GET', new LambdaIntegration(props.profileLambda), { authorizer: props.authorizer });
     profiles.addMethod('POST', new LambdaIntegration(props.profileLambda), { authorizer: props.authorizer });
     profiles.addMethod('PUT', new LambdaIntegration(props.profileLambda), { authorizer: props.authorizer });
-
     const profileID = profiles.addResource('{profileID}');
     profileID.addMethod('GET', new LambdaIntegration(props.profileLambda), { authorizer: props.authorizer });
     profileID.addMethod('PATCH', new LambdaIntegration(props.profileLambda), { authorizer: props.authorizer });
@@ -34,7 +33,12 @@ export class RestAPIResourcesConstruct extends Construct {
     owners.addMethod('PATCH', new LambdaIntegration(props.profileLambda), { authorizer: props.authorizer });
 
     const referrals = props.restApi.root.addResource('referrals');
-    const referralCode = referrals.addResource('{code}');
-    referralCode.addMethod('GET', new LambdaIntegration(props.referralsLambda), { authorizer: props.authorizer });
+    referrals.addMethod('GET', new LambdaIntegration(props.referralsLambda), { authorizer: props.authorizer });
+    const referralsByCodeID = referrals.addResource('byCodeID');
+    const referralsByCodeIDCode = referralsByCodeID.addResource('{code}');
+    referralsByCodeIDCode.addMethod('GET', new LambdaIntegration(props.referralsLambda), { authorizer: props.authorizer });
+    const referralsByID = referrals.addResource('byReferralID');
+    const referralsID = referralsByID.addResource('{referralID}');
+    referralsID.addMethod('GET', new LambdaIntegration(props.referralsLambda), { authorizer: props.authorizer });
   }
 }
