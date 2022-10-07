@@ -40,7 +40,7 @@ export class DynamoDBConstruct extends Construct {
     });
 
     this.eventsTable = new Table(scope, `${props.stackName}-EventsTable-${props.stage}`, {
-      partitionKey: { name: "eventsID", type: AttributeType.STRING },
+      partitionKey: { name: "eventID", type: AttributeType.STRING },
       billingMode: BillingMode.PAY_PER_REQUEST,
       removalPolicy: RemovalPolicy.DESTROY,
     });
