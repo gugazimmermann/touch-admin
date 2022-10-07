@@ -1,6 +1,6 @@
 import { Duration, RemovalPolicy } from "aws-cdk-lib";
-import { Effect, PolicyStatement, StarPrincipal } from "aws-cdk-lib/aws-iam";
-import { Bucket, BucketPolicy, HttpMethods, StorageClass } from "aws-cdk-lib/aws-s3";
+import { AnyPrincipal, Effect, PolicyStatement } from "aws-cdk-lib/aws-iam";
+import { Bucket, HttpMethods, StorageClass } from "aws-cdk-lib/aws-s3";
 import { Construct } from "constructs";
 
 type S3ConstructProps = {
@@ -35,25 +35,20 @@ export class S3Construct extends Construct {
       ],
       cors: [
         {
-          allowedMethods: [HttpMethods.GET, HttpMethods.POST, HttpMethods.PUT],
-          allowedOrigins: props.corsDomains,
           allowedHeaders: ['*'],
+          allowedMethods: [HttpMethods.GET, HttpMethods.HEAD, HttpMethods.PUT, HttpMethods.POST, HttpMethods.DELETE],
+          allowedOrigins: props.corsDomains,
+          exposedHeaders: ["x-amz-server-side-encryption", "x-amz-request-id", "x-amz-id-2", "ETag"],
+          maxAge: 3000
         },
       ],
     });
 
-    const logoAndMapsBucketPolicy = new BucketPolicy(scope, `${props.stackName}-LogoAndMapsBucketPolicy-${props.stage}`, {
-      bucket: this.logoAndMapsBucket
-    });
-
-    logoAndMapsBucketPolicy.document.addStatements(
-      new PolicyStatement({
-        effect: Effect.ALLOW,
-        principals: [new StarPrincipal()],
-        actions: ['s3:GetObject'],
-        resources: [`${this.logoAndMapsBucket.bucketArn}/public/*`],
-      }),
-    );
-
+    this.logoAndMapsBucket.addToResourcePolicy(new PolicyStatement({
+      effect: Effect.ALLOW,
+      principals: [new AnyPrincipal()],
+      actions: ['s3:GetObject'],
+      resources: [`${this.logoAndMapsBucket.bucketArn}/public/*`],
+    }));
   }
 }
