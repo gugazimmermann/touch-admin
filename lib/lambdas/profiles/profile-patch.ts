@@ -1,4 +1,3 @@
-import AWS = require("aws-sdk");
 import { APIGatewayEvent, APIGatewayProxyResult } from "aws-lambda";
 import { v4 as uuidv4 } from 'uuid';
 import commonResponse from "../common/commonResponse";
@@ -6,7 +5,6 @@ import { OwnerType } from '../common/types';
 import { DocumentClient } from "aws-sdk/lib/dynamodb/document_client";
 
 const dateNow = Date.now().toString();
-
 
 const patchLogoAndMap = async (db: DocumentClient, profileID: string, body: { logo?: string; map?: string; }, requestID: string, TableName: string): Promise<APIGatewayProxyResult> => {
   console.debug(`body`, JSON.stringify(body, undefined, 2));

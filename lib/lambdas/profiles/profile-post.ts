@@ -1,11 +1,7 @@
-import AWS = require("aws-sdk");
 import { APIGatewayEvent, APIGatewayProxyResult } from "aws-lambda";
-import { v4 as uuidv4 } from 'uuid';
 import { ProfileType } from "../common/types";
 import commonResponse from "../common/commonResponse";
 import { DocumentClient } from "aws-sdk/lib/dynamodb/document_client";
-
-const db = new AWS.DynamoDB.DocumentClient({ convertEmptyValues: true });
 
 const profilePost = async (db: DocumentClient, event: APIGatewayEvent, requestID: string, TableName: string): Promise<APIGatewayProxyResult> => {
   

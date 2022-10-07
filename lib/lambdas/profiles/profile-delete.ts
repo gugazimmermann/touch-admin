@@ -1,4 +1,3 @@
-import AWS = require("aws-sdk");
 import { APIGatewayEvent, APIGatewayProxyResult } from "aws-lambda";
 import commonResponse from "../common/commonResponse";
 import { DocumentClient } from "aws-sdk/lib/dynamodb/document_client";
