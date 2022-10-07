@@ -25,7 +25,7 @@ export class AdminStack extends cdk.Stack {
 
     const { logoAndMapsBucket } = new S3Construct(this, "S3Construct", { corsDomains, stackName, stage });
 
-    const { cognitoLambda, plansLambda, profileLambda, referralsLambda } = new LambdasConstruct(this, "LambdasConstruct", { plansTable, profileTable, referralTable, eventsTable, stackName, stage });
+    const { cognitoLambda, plansLambda, profileLambda, referralsLambda, eventsLambda } = new LambdasConstruct(this, "LambdasConstruct", { plansTable, profileTable, referralTable, eventsTable, stackName, stage });
     
     const { userPool, userPoolClient, identityPool } = new CognitoConstruct(this, "CognitoConstruct", { env, ses_noreply_email, cognitoLambda, stackName, stage });
 
@@ -39,6 +39,7 @@ export class AdminStack extends cdk.Stack {
       plansLambda,
       profileLambda,
       referralsLambda,
+      eventsLambda,
       stackName,
       stage,
     });
