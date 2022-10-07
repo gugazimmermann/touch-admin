@@ -21,11 +21,11 @@ export class AdminStack extends cdk.Stack {
 
     const { env, stackName, stage, ses_noreply_email } = props;
 
-    const { plansTable, profileTable, referralTable } = new DynamoDBConstruct(this, "DynamoDBConstruct", { stackName, stage });
+    const { plansTable, profileTable, referralTable, eventsTable } = new DynamoDBConstruct(this, "DynamoDBConstruct", { stackName, stage });
 
     const { logoAndMapsBucket } = new S3Construct(this, "S3Construct", { corsDomains, stackName, stage });
 
-    const { cognitoLambda, plansLambda, profileLambda, referralsLambda } = new LambdasConstruct(this, "LambdasConstruct", { plansTable, profileTable, referralTable, stackName, stage });
+    const { cognitoLambda, plansLambda, profileLambda, referralsLambda } = new LambdasConstruct(this, "LambdasConstruct", { plansTable, profileTable, referralTable, eventsTable, stackName, stage });
     
     const { userPool, userPoolClient, identityPool } = new CognitoConstruct(this, "CognitoConstruct", { env, ses_noreply_email, cognitoLambda, stackName, stage });
 
