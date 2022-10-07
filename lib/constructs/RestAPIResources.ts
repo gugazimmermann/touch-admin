@@ -46,10 +46,13 @@ export class RestAPIResourcesConstruct extends Construct {
     eventsResource.addMethod('POST', new LambdaIntegration(props.eventsLambda), { authorizer: props.authorizer });
     eventsResource.addMethod('PUT', new LambdaIntegration(props.eventsLambda), { authorizer: props.authorizer });
     const eventsByIDResource = eventsResource.addResource('byEventID');
-    const eventIDResource = eventsByIDResource.addResource('{eventID}');
-    eventIDResource.addMethod('GET', new LambdaIntegration(props.eventsLambda), { authorizer: props.authorizer });
+    const eventsByIDEventIDResource = eventsByIDResource.addResource('{eventID}');
+    eventsByIDEventIDResource.addMethod('GET', new LambdaIntegration(props.eventsLambda), { authorizer: props.authorizer });
     const eventsByProfileIDResource = eventsResource.addResource('byProfileID');
     const eventProfileIDResource = eventsByProfileIDResource.addResource('{profileID}');
     eventProfileIDResource.addMethod('GET', new LambdaIntegration(props.eventsLambda), { authorizer: props.authorizer });
+    const eventIDResource = eventsResource.addResource('{eventID}');
+    const eventIDLogoMap = eventIDResource.addResource('logomap');
+    eventIDLogoMap.addMethod('PATCH', new LambdaIntegration(props.eventsLambda), { authorizer: props.authorizer });
   }
 }
