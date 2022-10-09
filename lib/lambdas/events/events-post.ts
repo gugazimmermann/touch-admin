@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import { EventType } from '../common/types';
 import commonResponse from "../common/commonResponse";
 import { DocumentClient } from "aws-sdk/lib/dynamodb/document_client";
+import { PLANSTYPES } from '../common/enums';
 
 const eventsPost = async (
   db: DocumentClient,
@@ -15,13 +16,14 @@ const eventsPost = async (
   if (
     !body ||
     !body.profileID ||
+    !body.planType ||
     !body.name ||
     !body.zipCode ||
     !body.state ||
     !body.city ||
-    !body.dates.length ||
+    (body.planType !== PLANSTYPES.SUBSCRIPTION && !body.dates.length) ||
     !body.method ||
-    !body.gift ||
+    (!body.gift && body.gift !== 0) ||
     (!body.prizeDraw && body.prizeDraw !== 0)
   )
     return commonResponse(
