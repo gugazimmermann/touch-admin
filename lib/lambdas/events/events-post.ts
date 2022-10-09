@@ -33,6 +33,9 @@ const eventsPost = async (
   const eventData: EventType = {
     eventID: uuidv4(),
     profileID: body.profileID,
+    planType: body.planType,
+    plan: body.plan,
+    'profileID#PlanType': body['profileID#PlanType'],
     name: body.name,
     email: body.email,
     website: body.website,

@@ -64,7 +64,7 @@ export interface EventType extends IDBDates, IAddress, IContacts {
   profileID: UUID;
   planType: PLANSTYPES,
   plan: PlanType,
-  profileIDPlanType: string;
+  'profileID#PlanType': string;
   name: string;
   dates: string[];
   referralCode?: string;
