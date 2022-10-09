@@ -24,35 +24,35 @@ export class RestAPIResourcesConstruct extends Construct {
     profilesResource.addMethod('GET', new LambdaIntegration(props.profileLambda), { authorizer: props.authorizer });
     profilesResource.addMethod('POST', new LambdaIntegration(props.profileLambda), { authorizer: props.authorizer });
     profilesResource.addMethod('PUT', new LambdaIntegration(props.profileLambda), { authorizer: props.authorizer });
-    const profileIDResource = profilesResource.addResource('{profileID}');
-    profileIDResource.addMethod('GET', new LambdaIntegration(props.profileLambda), { authorizer: props.authorizer });
-    profileIDResource.addMethod('PATCH', new LambdaIntegration(props.profileLambda), { authorizer: props.authorizer });
-    profileIDResource.addMethod('DELETE', new LambdaIntegration(props.profileLambda), { authorizer: props.authorizer });
-    const logomap = profileIDResource.addResource('logomap');
-    logomap.addMethod('PATCH', new LambdaIntegration(props.profileLambda), { authorizer: props.authorizer });
-    const owners = profileIDResource.addResource('owners');
-    owners.addMethod('PATCH', new LambdaIntegration(props.profileLambda), { authorizer: props.authorizer });
+    const profilesResourceProfileIDVar = profilesResource.addResource('{profileID}');
+    profilesResourceProfileIDVar.addMethod('GET', new LambdaIntegration(props.profileLambda), { authorizer: props.authorizer });
+    profilesResourceProfileIDVar.addMethod('PATCH', new LambdaIntegration(props.profileLambda), { authorizer: props.authorizer });
+    profilesResourceProfileIDVar.addMethod('DELETE', new LambdaIntegration(props.profileLambda), { authorizer: props.authorizer });
+    const profilesResourceProfileIDResourceLogoMapResource = profilesResourceProfileIDVar.addResource('logomap');
+    profilesResourceProfileIDResourceLogoMapResource.addMethod('PATCH', new LambdaIntegration(props.profileLambda), { authorizer: props.authorizer });
+    const profilesResourceProfileIDResourceOwnersResource = profilesResourceProfileIDVar.addResource('owners');
+    profilesResourceProfileIDResourceOwnersResource.addMethod('PATCH', new LambdaIntegration(props.profileLambda), { authorizer: props.authorizer });
 
     const referralsResource = props.restApi.root.addResource('referrals');
     referralsResource.addMethod('GET', new LambdaIntegration(props.referralsLambda), { authorizer: props.authorizer });
-    const referralsByCodeIDResource = referralsResource.addResource('byCodeID');
-    const referralsByCodeIDCodeResource = referralsByCodeIDResource.addResource('{code}');
-    referralsByCodeIDCodeResource.addMethod('GET', new LambdaIntegration(props.referralsLambda), { authorizer: props.authorizer });
-    const referralsByIDResource = referralsResource.addResource('byReferralID');
-    const referralsIDResource = referralsByIDResource.addResource('{referralID}');
-    referralsIDResource.addMethod('GET', new LambdaIntegration(props.referralsLambda), { authorizer: props.authorizer });
-
+    const referralsResourceByCodeResource = referralsResource.addResource('byCodeID');
+    const referralsResourceByCodeResourceCodeVar = referralsResourceByCodeResource.addResource('{code}');
+    referralsResourceByCodeResourceCodeVar.addMethod('GET', new LambdaIntegration(props.referralsLambda), { authorizer: props.authorizer });
+    const referralsResourceByReferralIDResource = referralsResource.addResource('byReferralID');
+    const referralsResourceByReferralIDResourceReferralIDVar = referralsResourceByReferralIDResource.addResource('{referralID}');
+    referralsResourceByReferralIDResourceReferralIDVar.addMethod('GET', new LambdaIntegration(props.referralsLambda), { authorizer: props.authorizer });
     const eventsResource = props.restApi.root.addResource('events');
     eventsResource.addMethod('POST', new LambdaIntegration(props.eventsLambda), { authorizer: props.authorizer });
     eventsResource.addMethod('PUT', new LambdaIntegration(props.eventsLambda), { authorizer: props.authorizer });
-    const eventsByIDResource = eventsResource.addResource('byEventID');
-    const eventsByIDEventIDResource = eventsByIDResource.addResource('{eventID}');
-    eventsByIDEventIDResource.addMethod('GET', new LambdaIntegration(props.eventsLambda), { authorizer: props.authorizer });
-    const eventsByProfileIDResource = eventsResource.addResource('byProfileID');
-    const eventProfileIDResource = eventsByProfileIDResource.addResource('{profileID}');
-    eventProfileIDResource.addMethod('GET', new LambdaIntegration(props.eventsLambda), { authorizer: props.authorizer });
-    const eventIDResource = eventsResource.addResource('{eventID}');
-    const eventIDLogoMap = eventIDResource.addResource('logomap');
-    eventIDLogoMap.addMethod('PATCH', new LambdaIntegration(props.eventsLambda), { authorizer: props.authorizer });
+    const eventsResourceEventIDVar = eventsResource.addResource('{eventID}');
+    eventsResourceEventIDVar.addMethod('GET', new LambdaIntegration(props.eventsLambda), { authorizer: props.authorizer });
+    const eventsResourceEventIDVarLogoMapResource = eventsResourceEventIDVar.addResource('logomap');
+    eventsResourceEventIDVarLogoMapResource.addMethod('PATCH', new LambdaIntegration(props.eventsLambda), { authorizer: props.authorizer });
+    const eventsResourceByProfileIDResource = eventsResource.addResource('byProfileID');
+    const eventsResourceByProfileIDResourceProfileIDVar = eventsResourceByProfileIDResource.addResource('{profileID}');
+    eventsResourceByProfileIDResourceProfileIDVar.addMethod('GET', new LambdaIntegration(props.eventsLambda), { authorizer: props.authorizer });
+    const eventsResourceByProfileIDResourceProfileIDVarPlanTypeVar = eventsResourceByProfileIDResourceProfileIDVar.addResource('{planType}')
+    eventsResourceByProfileIDResourceProfileIDVarPlanTypeVar.addMethod('GET', new LambdaIntegration(props.eventsLambda), { authorizer: props.authorizer });
+    
   }
 }

@@ -1,0 +1,10 @@
+export enum PLANSTYPES {
+  BASIC = "BASIC",
+  ADVANCED = "ADVANCED",
+  SUBSCRIPTION = "SUBSCRIPTION",
+}
+
+export enum FREQUENCY {
+  SINGLE = "SINGLE",
+  MONTHLY = "MONTHLY"
+}

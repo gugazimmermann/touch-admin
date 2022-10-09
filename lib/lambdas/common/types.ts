@@ -1,3 +1,4 @@
+import { FREQUENCY, PLANSTYPES } from './enums';
 export type UUID = string;
 
 interface IDBDates {
@@ -42,6 +43,15 @@ export type CustomMessageResponse = {
   emailMessage: string;
 }
 
+export interface PlanType {
+  planID: UUID;
+  name: string;
+  type: PLANSTYPES,
+  frequency: FREQUENCY;
+  detail: string[];
+  price: number;
+}
+
 export interface ReferralType extends IDBDates, IAddress, IContacts {
   referralID: UUID;
   code: string;
@@ -51,7 +61,10 @@ export interface ReferralType extends IDBDates, IAddress, IContacts {
 
 export interface EventType extends IDBDates, IAddress, IContacts {
   eventID: UUID;
-  profileID?: UUID;
+  profileID: UUID;
+  planType: PLANSTYPES,
+  plan: PlanType,
+  profileIDPlanType: string;
   name: string;
   dates: string[];
   referralCode?: string;

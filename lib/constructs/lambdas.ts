@@ -40,7 +40,7 @@ export class LambdasConstruct extends Construct {
       ...commonLambdaProps,
     });
     props.profileTable.grantReadWriteData(this.profileLambda);
-    this.profileLambda.addEnvironment("TABLE_NAME",  props.profileTable.tableName);
+    this.profileLambda.addEnvironment("TABLE_NAME", props.profileTable.tableName);
 
     this.referralsLambda = new NodejsFunction(scope, `${props.stackName}-ReferralsLambda-${props.stage}`, {
       entry: join(__dirname, "..", "lambdas", "referrals.ts"),
@@ -54,6 +54,6 @@ export class LambdasConstruct extends Construct {
       ...commonLambdaProps,
     });
     props.eventsTable.grantReadWriteData(this.eventsLambda);
-    this.eventsLambda.addEnvironment("TABLE_NAME",  props.eventsTable.tableName);
+    this.eventsLambda.addEnvironment("TABLE_NAME", props.eventsTable.tableName);
   }
 }
