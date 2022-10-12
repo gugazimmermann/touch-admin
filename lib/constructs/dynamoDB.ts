@@ -87,6 +87,11 @@ export class DynamoDBConstruct extends Construct {
       }
     );
     this.surveysTable.addGlobalSecondaryIndex({
+      indexName: "byEventID",
+      partitionKey: { name: "eventID", type: AttributeType.STRING },
+      projectionType: ProjectionType.ALL,
+    });
+    this.surveysTable.addGlobalSecondaryIndex({
       indexName: "byProfileID",
       partitionKey: { name: "profileID", type: AttributeType.STRING },
       projectionType: ProjectionType.ALL,

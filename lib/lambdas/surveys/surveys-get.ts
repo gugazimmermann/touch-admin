@@ -14,6 +14,24 @@ const getBySurveyID = async (db: DocumentClient, surveyID: string, requestID: st
   }
 }
 
+const getByEventID = async (db: DocumentClient, eventID: string, requestID: string, TableName: string): Promise<APIGatewayProxyResult> => {
+  const params = {
+    TableName: TableName,
+    IndexName: "byEventID",
+    KeyConditionExpression: "#eventID = :eventID",
+    ExpressionAttributeNames: { "#eventID": "eventID" },
+    ExpressionAttributeValues: { ":eventID": eventID },
+  };
+  console.debug(`params`, JSON.stringify(params, undefined, 2));
+  try {
+    const res = await db.query(params).promise();
+    return commonResponse(200, JSON.stringify({ data: res.Items || [], requestID }));
+  } catch (error) {
+    console.error(`error`, JSON.stringify(error, undefined, 2));
+    return commonResponse(500, JSON.stringify({ error, requestID}));
+  }
+}
+
 const getByProfileID = async (db: DocumentClient, profileID: string, requestID: string, TableName: string): Promise<APIGatewayProxyResult> => {
   const params = {
     TableName: TableName,
@@ -32,9 +50,12 @@ const getByProfileID = async (db: DocumentClient, profileID: string, requestID: 
   }
 }
 
+
 const surveysGet = async (db: DocumentClient, event: APIGatewayEvent, requestID: string, TableName: string): Promise<APIGatewayProxyResult> => {
   const surveyID = event?.pathParameters && event.pathParameters?.surveyID;
   if (surveyID) return getBySurveyID(db, surveyID, requestID, TableName);
+  const eventID = event?.pathParameters && event.pathParameters?.eventID;
+  if (eventID) return getByEventID(db, eventID as string, requestID, TableName);
   const profileID = event?.pathParameters && event.pathParameters?.profileID;
   return getByProfileID(db, profileID as string, requestID, TableName);
 };

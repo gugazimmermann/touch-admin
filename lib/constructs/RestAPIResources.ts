@@ -58,8 +58,11 @@ export class RestAPIResourcesConstruct extends Construct {
     const surveysResource = props.restApi.root.addResource('surveys');
     const surveysResourceSurveyIDVar = surveysResource.addResource('{surveyID}');
     surveysResourceSurveyIDVar.addMethod('GET', new LambdaIntegration(props.surveysLambda), { authorizer: props.authorizer });
-    const surveysResourceByReferralIDResource = surveysResource.addResource('byReferralID');
-    const surveysResourceByReferralIDResourceReferralIDVar = surveysResourceByReferralIDResource.addResource('{referralID}');
-    surveysResourceByReferralIDResourceReferralIDVar.addMethod('GET', new LambdaIntegration(props.surveysLambda), { authorizer: props.authorizer });
+    const surveysResourceByEventIDResource = surveysResource.addResource('byEventID');
+    const surveysResourceByEventIDResourceEventIDVar = surveysResourceByEventIDResource.addResource('{eventID}');
+    surveysResourceByEventIDResourceEventIDVar.addMethod('GET', new LambdaIntegration(props.surveysLambda), { authorizer: props.authorizer });
+    const surveysResourceByProfileIDResource = surveysResource.addResource('byProfileID');
+    const surveysResourceByProfileIDResourceProfileIDVar = surveysResourceByProfileIDResource.addResource('{profileID}');
+    surveysResourceByProfileIDResourceProfileIDVar.addMethod('GET', new LambdaIntegration(props.surveysLambda), { authorizer: props.authorizer });
   }
 }
