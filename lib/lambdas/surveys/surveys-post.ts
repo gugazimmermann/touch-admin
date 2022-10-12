@@ -41,7 +41,9 @@ const surveysPost = async (
   })
 
   const surveyData: SurveyType = {
+    surveyID: uuidv4(),
     profileID: body.profileID,
+    eventID: body.eventID,
     language: body.language,
     questions: questions,
     createdAt: dateNow,
