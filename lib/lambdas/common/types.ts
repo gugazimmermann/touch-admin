@@ -80,17 +80,17 @@ export interface EventType extends IDBDates, IAddress, IContacts {
 }
 
 export interface SurveyAnswerType extends IDBDates {
-  answerID: UUID;
+  id: UUID;
   order: number;
   text: string;
 }
 
 export interface SurveyQuestionType extends IDBDates {
-  questionID: UUID;
+  id: UUID;
   order: number;
   text: string;
   type: SURVEYANSWER;
-  required: boolean;
+  required: string;
   answers: SurveyAnswerType[];
 }
 export interface SurveyType extends IDBDates {
