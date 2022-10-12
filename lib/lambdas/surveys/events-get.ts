@@ -2,8 +2,8 @@ import { APIGatewayEvent, APIGatewayProxyResult } from "aws-lambda";
 import commonResponse from "../common/commonResponse";
 import { DocumentClient } from "aws-sdk/lib/dynamodb/document_client";
 
-const getByEventID = async (db: DocumentClient, eventID: string, requestID: string, TableName: string): Promise<APIGatewayProxyResult> => {
-  const params = { TableName, Key: { eventID } };
+const getBySurveyID = async (db: DocumentClient, surveyID: string, requestID: string, TableName: string): Promise<APIGatewayProxyResult> => {
+  const params = { TableName, Key: { surveyID } };
   console.debug(`params`, JSON.stringify(params, undefined, 2));
   try {
     const res = await db.get(params).promise();
@@ -32,11 +32,11 @@ const getByProfileID = async (db: DocumentClient, profileID: string, requestID: 
   }
 }
 
-const eventsGet = async (db: DocumentClient, event: APIGatewayEvent, requestID: string, TableName: string): Promise<APIGatewayProxyResult> => {
-  const eventID = event?.pathParameters && event.pathParameters?.eventID;
-  if (eventID) return getByEventID(db, eventID, requestID, TableName);
+const surveysGet = async (db: DocumentClient, event: APIGatewayEvent, requestID: string, TableName: string): Promise<APIGatewayProxyResult> => {
+  const surveyID = event?.pathParameters && event.pathParameters?.surveyID;
+  if (surveyID) return getBySurveyID(db, surveyID, requestID, TableName);
   const profileID = event?.pathParameters && event.pathParameters?.profileID;
   return getByProfileID(db, profileID as string, requestID, TableName);
 };
 
-export default eventsGet;
+export default surveysGet;
