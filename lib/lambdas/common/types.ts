@@ -1,4 +1,4 @@
-import { FREQUENCY, PLANSTYPES } from './enums';
+import { FREQUENCY, PLANSTYPES, LANGUAGES, SURVEYANSWER } from './enums';
 export type UUID = string;
 
 interface IDBDates {
@@ -77,4 +77,25 @@ export interface EventType extends IDBDates, IAddress, IContacts {
   description?: string;
   map?: string;
   logo?: string;
+}
+
+export interface SurveyAnswerType extends IDBDates {
+  answerID: UUID;
+  order: number;
+  text: string;
+}
+
+export interface SurveyQuestionType extends IDBDates {
+  questionID: UUID;
+  order: number;
+  text: string;
+  type: SURVEYANSWER;
+  required: boolean;
+  answers: SurveyAnswerType[];
+}
+export interface SurveyType extends IDBDates {
+  surveyID?: UUID;
+  profileID: UUID;
+  language: LANGUAGES,
+  questions: SurveyQuestionType[]
 }

@@ -9,6 +9,7 @@ type LambdasConstructProps = {
   profileTable: Table;
   referralTable: Table;
   eventsTable: Table;
+  surveysTable: Table;
   stackName: string;
   stage: string;
 };
@@ -19,6 +20,7 @@ export class LambdasConstruct extends Construct {
   public readonly profileLambda: NodejsFunction;
   public readonly referralsLambda: NodejsFunction;
   public readonly eventsLambda: NodejsFunction;
+  public readonly surveysLambda: NodejsFunction;
 
   constructor(scope: Construct, id: string, props: LambdasConstructProps) {
     super(scope, id);
@@ -55,5 +57,12 @@ export class LambdasConstruct extends Construct {
     });
     props.eventsTable.grantReadWriteData(this.eventsLambda);
     this.eventsLambda.addEnvironment("TABLE_NAME", props.eventsTable.tableName);
+
+    this.surveysLambda = new NodejsFunction(scope, `${props.stackName}-SurveysLambda-${props.stage}`, {
+      entry: join(__dirname, "..", "lambdas", "surveys.ts"),
+      ...commonLambdaProps,
+    });
+    props.surveysTable.grantReadWriteData(this.surveysLambda);
+    this.surveysLambda.addEnvironment("TABLE_NAME", props.surveysTable.tableName);
   }
 }

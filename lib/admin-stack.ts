@@ -25,7 +25,8 @@ export class AdminStack extends cdk.Stack {
       plansTable,
       profileTable,
       referralTable,
-      eventsTable
+      eventsTable,
+      surveysTable
     } = new DynamoDBConstruct(this, "DynamoDBConstruct", { stackName, stage });
 
     const { logoAndMapsBucket } = new S3Construct(this, "S3Construct", {
@@ -39,12 +40,14 @@ export class AdminStack extends cdk.Stack {
       plansLambda,
       profileLambda,
       referralsLambda,
-      eventsLambda
+      eventsLambda,
+      surveysLambda
     } = new LambdasConstruct(this, "LambdasConstruct", {
       plansTable,
       profileTable,
       referralTable,
       eventsTable,
+      surveysTable,
       stackName,
       stage,
     });
@@ -77,6 +80,7 @@ export class AdminStack extends cdk.Stack {
       profileLambda,
       referralsLambda,
       eventsLambda,
+      surveysLambda,
       stackName,
       stage,
     });

@@ -9,6 +9,7 @@ type RestAPIResourcesConstructProps = {
   profileLambda: NodejsFunction;
   referralsLambda: NodejsFunction;
   eventsLambda: NodejsFunction;
+  surveysLambda: NodejsFunction;
   stackName: string;
   stage: string;
 };
@@ -54,5 +55,11 @@ export class RestAPIResourcesConstruct extends Construct {
     const eventsResourceByProfileIDResourceProfileIDVarPlanTypeVar = eventsResourceByProfileIDResourceProfileIDVar.addResource('{planType}')
     eventsResourceByProfileIDResourceProfileIDVarPlanTypeVar.addMethod('GET', new LambdaIntegration(props.eventsLambda), { authorizer: props.authorizer });
     
+    const surveysResource = props.restApi.root.addResource('surveys');
+    const surveysResourceSurveyIDVar = surveysResource.addResource('{surveyID}');
+    surveysResourceSurveyIDVar.addMethod('GET', new LambdaIntegration(props.surveysLambda), { authorizer: props.authorizer });
+    const surveysResourceByReferralIDResource = surveysResource.addResource('byReferralID');
+    const surveysResourceByReferralIDResourceReferralIDVar = surveysResourceByReferralIDResource.addResource('{referralID}');
+    surveysResourceByReferralIDResourceReferralIDVar.addMethod('GET', new LambdaIntegration(props.surveysLambda), { authorizer: props.authorizer });
   }
 }
