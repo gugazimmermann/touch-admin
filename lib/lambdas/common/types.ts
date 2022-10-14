@@ -93,10 +93,14 @@ export interface SurveyQuestionType extends IDBDates {
   required: string;
   answers: SurveyAnswerType[];
 }
+
+export type SurveySimpleType = {
+  language: LANGUAGES,
+  questions: SurveyQuestionType[]
+}
 export interface SurveyType extends IDBDates {
   surveyID: UUID;
   profileID: UUID;
   eventID: UUID;
-  language: LANGUAGES,
-  questions: SurveyQuestionType[]
+  surveys: SurveySimpleType[];
 }

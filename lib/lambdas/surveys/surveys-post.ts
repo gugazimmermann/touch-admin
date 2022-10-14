@@ -1,6 +1,6 @@
 import { APIGatewayEvent, APIGatewayProxyResult } from "aws-lambda";
 import { v4 as uuidv4 } from "uuid";
-import { SurveyAnswerType, SurveyQuestionType, SurveyType } from '../common/types';
+import { SurveyAnswerType, SurveyQuestionType, SurveySimpleType, SurveyType } from '../common/types';
 import commonResponse from "../common/commonResponse";
 import { DocumentClient } from "aws-sdk/lib/dynamodb/document_client";
 
@@ -13,20 +13,13 @@ const surveysPost = async (
 ): Promise<APIGatewayProxyResult> => {
   const body: SurveyType = event?.body ? JSON.parse(event.body) : null;
 
-  if (
-    !body ||
-    !body.profileID ||
-    !body.language ||
-    (!body.questions || !body.questions.length)
-  )
-    return commonResponse(
-      400,
-      JSON.stringify({ message: "Missing Data", requestID })
-    );
+  if (!body || !body.profileID || !body.eventID) return commonResponse(400, JSON.stringify({ message: "Missing Data", requestID }));
 
   const dateNow = Date.now().toString();
 
-  const questions: SurveyQuestionType[] = body.questions.map(q => {
+  const survey: SurveySimpleType = body.surveys[0]
+
+  const questions: SurveyQuestionType[] = survey.questions.map(q => {
     const answerFormated: SurveyAnswerType[] = q.answers.map(a => ({
       ...a,
       createdAt: dateNow,
@@ -40,12 +33,17 @@ const surveysPost = async (
     }
   })
 
+  const simpleSurvey: SurveySimpleType[] = [];
+  simpleSurvey.push({
+    language: survey.language,
+    questions: questions,
+  })
+
   const surveyData: SurveyType = {
     surveyID: uuidv4(),
     profileID: body.profileID,
     eventID: body.eventID,
-    language: body.language,
-    questions: questions,
+    surveys: simpleSurvey,
     createdAt: dateNow,
     updatedAt: dateNow,
     deleteddAt: "",
