@@ -22,18 +22,16 @@ export class RestAPIResourcesConstruct extends Construct {
     plans.addMethod('GET', new LambdaIntegration(props.plansLambda));
 
     const profilesResource = props.restApi.root.addResource('profiles');
-    profilesResource.addMethod('GET', new LambdaIntegration(props.profileLambda), { authorizer: props.authorizer });
     profilesResource.addMethod('POST', new LambdaIntegration(props.profileLambda), { authorizer: props.authorizer });
     profilesResource.addMethod('PUT', new LambdaIntegration(props.profileLambda), { authorizer: props.authorizer });
     const profilesResourceProfileIDVar = profilesResource.addResource('{profileID}');
     profilesResourceProfileIDVar.addMethod('GET', new LambdaIntegration(props.profileLambda), { authorizer: props.authorizer });
     profilesResourceProfileIDVar.addMethod('PATCH', new LambdaIntegration(props.profileLambda), { authorizer: props.authorizer });
-    profilesResourceProfileIDVar.addMethod('DELETE', new LambdaIntegration(props.profileLambda), { authorizer: props.authorizer });
     const profilesResourceProfileIDResourceLogoMapResource = profilesResourceProfileIDVar.addResource('logomap');
     profilesResourceProfileIDResourceLogoMapResource.addMethod('PATCH', new LambdaIntegration(props.profileLambda), { authorizer: props.authorizer });
     const profilesResourceProfileIDResourceOwnersResource = profilesResourceProfileIDVar.addResource('owners');
     profilesResourceProfileIDResourceOwnersResource.addMethod('PATCH', new LambdaIntegration(props.profileLambda), { authorizer: props.authorizer });
-
+    
     const referralsResource = props.restApi.root.addResource('referrals');
     referralsResource.addMethod('GET', new LambdaIntegration(props.referralsLambda), { authorizer: props.authorizer });
     const referralsResourceByCodeResource = referralsResource.addResource('byCodeID');
