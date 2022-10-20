@@ -31,7 +31,9 @@ export class RestAPIResourcesConstruct extends Construct {
     profilesResourceProfileIDResourceLogoMapResource.addMethod('PATCH', new LambdaIntegration(props.profileLambda), { authorizer: props.authorizer });
     const profilesResourceProfileIDResourceOwnersResource = profilesResourceProfileIDVar.addResource('owners');
     profilesResourceProfileIDResourceOwnersResource.addMethod('PATCH', new LambdaIntegration(props.profileLambda), { authorizer: props.authorizer });
-    
+    const profilesResourceProfileIDResourceOwnersResourceOwnerIDVar = profilesResourceProfileIDResourceOwnersResource.addResource('{ownerID}');
+    profilesResourceProfileIDResourceOwnersResourceOwnerIDVar.addMethod('PATCH', new LambdaIntegration(props.profileLambda), { authorizer: props.authorizer });
+
     const referralsResource = props.restApi.root.addResource('referrals');
     referralsResource.addMethod('GET', new LambdaIntegration(props.referralsLambda), { authorizer: props.authorizer });
     const referralsResourceByCodeResource = referralsResource.addResource('byCodeID');

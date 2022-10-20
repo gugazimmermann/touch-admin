@@ -84,6 +84,41 @@ const patchOwers = async (db: DocumentClient, profileID: string, body: OwnerType
   }
 }
 
+const deleteOwner = async (db: DocumentClient, profileID: string, ownerID: string, requestID: string, TableName: string): Promise<APIGatewayProxyResult> => {
+  let ownersList: OwnerType[] = [];
+  const queryParams = {
+    TableName,
+    Key: { profileID },
+    ProjectionExpression: "#owners",
+    ExpressionAttributeNames: { "#owners": "owners" },
+  };
+  try {
+    const queryResponse = await db.get(queryParams).promise();
+    console.debug(`queryResponse`, JSON.stringify(queryResponse.Item?.owners, undefined, 2));
+    (queryResponse.Item?.owners || []).forEach((i: OwnerType) => ownersList.push(i));
+  } catch (error) {
+    console.error(`error get`, JSON.stringify(error, undefined, 2));
+  }
+  ownersList = ownersList.filter(o => o.ownerID !== ownerID);
+  console.debug(`ownersList`, JSON.stringify(ownersList, undefined, 2));
+  const params = {
+    TableName,
+    Key: { profileID },
+    UpdateExpression: "set #owners = :owners, #updatedAt = :updatedAt",
+    ExpressionAttributeValues: { ":owners": ownersList, ":updatedAt": dateNow },
+    ExpressionAttributeNames: { "#owners": "owners", "#updatedAt": "updatedAt" },
+    ReturnValues: "ALL_NEW",
+  };
+  console.debug(`params`, JSON.stringify(params, undefined, 2));
+  try {
+    const res = await db.update(params).promise();
+    return commonResponse(200, JSON.stringify({ data: res.Attributes, requestID }));
+  } catch (error) {
+    console.error(`error`, JSON.stringify(error, undefined, 2));
+    return commonResponse(500, JSON.stringify({ error, requestID }));
+  }
+}
+
 const patchEmail = async (db: DocumentClient, profileID: string, email: string, requestID: string, TableName: string): Promise<APIGatewayProxyResult> => {
   const queryParams = {
     TableName,
@@ -124,7 +159,11 @@ const profilePatch = async (db: DocumentClient, event: APIGatewayEvent, requestI
   const body = event?.body ? JSON.parse(event.body) : null;
 
   if (event.resource.includes('logomap')) return patchLogoAndMap(db, profileID, body, requestID, TableName);
-  else if (event.resource.includes('owners')) return patchOwers(db, profileID, body, requestID, TableName);
+  else if (event.resource.includes('owners')) {
+    const ownerID = event?.pathParameters && event.pathParameters?.ownerID;
+    if (ownerID) return deleteOwner(db, profileID, ownerID, requestID, TableName)
+    return patchOwers(db, profileID, body, requestID, TableName);
+  }
   else {
     if (!body || !body.email) return commonResponse(400, JSON.stringify({ message: 'Missing Data', requestID }))
     return patchEmail(db, profileID, body.email, requestID, TableName);
