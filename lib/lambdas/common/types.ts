@@ -7,6 +7,40 @@ interface IDBDates {
   deleteddAt?: string;
 }
 
+export interface IMercadoPagoClient {
+  address?: {
+    id?: string;
+    zip_code?: string;
+    street_name?: string;
+    street_number?: number;
+    city?: string;
+  },
+  addresses?: string[];
+  cards?: string[];
+  date_created?: string;
+  date_last_updated?: string;
+  date_registered?: string;
+  default_address?: string;
+  default_card?: string;
+  description?: string;
+  email?: string;
+  first_name?: string;
+  id?: string;
+  identification?: { 
+    type?: string;
+    number?: string;
+  },
+  last_name?: string;
+  live_mode?: string;
+  metadata?: { 
+    source_sync?: string;
+  },
+  phone?: {
+    area_code?: string;
+    number?: string;
+  }
+}
+
 export interface IContacts {
   email?: string;
   phone?: string;
@@ -31,6 +65,7 @@ export interface ProfileType extends IDBDates, IAddress, IContacts {
   logo?: string;
   map?: string;
   owners?: OwnerType[];
+  mercadopago?: IMercadoPagoClient;
 }
 
 export interface OwnerType extends IDBDates, IContacts {

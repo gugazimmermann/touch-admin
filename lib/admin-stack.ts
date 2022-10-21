@@ -41,7 +41,8 @@ export class AdminStack extends cdk.Stack {
       profileLambda,
       referralsLambda,
       eventsLambda,
-      surveysLambda
+      surveysLambda,
+      mercadoPagoLambda
     } = new LambdasConstruct(this, "LambdasConstruct", {
       plansTable,
       profileTable,
@@ -81,6 +82,7 @@ export class AdminStack extends cdk.Stack {
       referralsLambda,
       eventsLambda,
       surveysLambda,
+      mercadoPagoLambda,
       stackName,
       stage,
     });

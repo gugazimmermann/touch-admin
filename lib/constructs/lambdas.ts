@@ -2,7 +2,14 @@ import { Table } from "aws-cdk-lib/aws-dynamodb";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { Construct } from "constructs";
 import { join } from "path";
+import * as dotenv from 'dotenv';
 import commonLambdaProps from "./common/commonLambdaProps";
+import { Duration } from "aws-cdk-lib";
+
+dotenv.config();
+
+const MERCADO_PAGO_ACCESS_TOKEN = process.env.MERCADO_PAGO_ACCESS_TOKEN || '';
+const MERCADO_PAGO_ACCESS_TOKEN_TEST = process.env.MERCADO_PAGO_ACCESS_TOKEN_TEST || '';
 
 type LambdasConstructProps = {
   plansTable: Table;
@@ -21,6 +28,7 @@ export class LambdasConstruct extends Construct {
   public readonly referralsLambda: NodejsFunction;
   public readonly eventsLambda: NodejsFunction;
   public readonly surveysLambda: NodejsFunction;
+  public readonly mercadoPagoLambda: NodejsFunction;
 
   constructor(scope: Construct, id: string, props: LambdasConstructProps) {
     super(scope, id);
@@ -64,5 +72,16 @@ export class LambdasConstruct extends Construct {
     });
     props.surveysTable.grantReadWriteData(this.surveysLambda);
     this.surveysLambda.addEnvironment("TABLE_NAME", props.surveysTable.tableName);
+
+    this.mercadoPagoLambda = new NodejsFunction(scope, `${props.stackName}-MercadoPagoLambda-${props.stage}`, {
+      entry: join(__dirname, "..", "lambdas", "mercadopago.ts"),
+      ...commonLambdaProps,
+      timeout: Duration.minutes(1),
+      memorySize: 512
+    });
+    props.profileTable.grantReadWriteData(this.mercadoPagoLambda);
+    this.mercadoPagoLambda.addEnvironment("TABLE_NAME", props.profileTable.tableName);
+    this.mercadoPagoLambda.addEnvironment("MERCADO_PAGO_ACCESS_TOKEN", MERCADO_PAGO_ACCESS_TOKEN);
+    this.mercadoPagoLambda.addEnvironment("MERCADO_PAGO_ACCESS_TOKEN_TEST", MERCADO_PAGO_ACCESS_TOKEN_TEST);
   }
 }

@@ -10,6 +10,7 @@ type RestAPIResourcesConstructProps = {
   referralsLambda: NodejsFunction;
   eventsLambda: NodejsFunction;
   surveysLambda: NodejsFunction;
+  mercadoPagoLambda: NodejsFunction;
   stackName: string;
   stage: string;
 };
@@ -56,7 +57,13 @@ export class RestAPIResourcesConstruct extends Construct {
     eventsResourceByProfileIDResourceProfileIDVar.addMethod('GET', new LambdaIntegration(props.eventsLambda), { authorizer: props.authorizer });
     const eventsResourceByProfileIDResourceProfileIDVarPlanTypeVar = eventsResourceByProfileIDResourceProfileIDVar.addResource('{planType}')
     eventsResourceByProfileIDResourceProfileIDVarPlanTypeVar.addMethod('GET', new LambdaIntegration(props.eventsLambda), { authorizer: props.authorizer });
-    
+
+    const mercadopagoResource = props.restApi.root.addResource('mercadopago');
+    const mercadopagoResourceClientResource = mercadopagoResource.addResource('client');
+    mercadopagoResourceClientResource.addMethod('GET', new LambdaIntegration(props.mercadoPagoLambda), { authorizer: props.authorizer });
+    mercadopagoResourceClientResource.addMethod('POST', new LambdaIntegration(props.mercadoPagoLambda), { authorizer: props.authorizer });
+    mercadopagoResourceClientResource.addMethod('PUT', new LambdaIntegration(props.mercadoPagoLambda), { authorizer: props.authorizer });
+
     const surveysResource = props.restApi.root.addResource('surveys');
     surveysResource.addMethod('POST', new LambdaIntegration(props.surveysLambda), { authorizer: props.authorizer });
     const surveysResourceSurveyIDVar = surveysResource.addResource('{surveyID}');
