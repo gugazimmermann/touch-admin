@@ -16,6 +16,7 @@ type LambdasConstructProps = {
   profileTable: Table;
   referralTable: Table;
   eventsTable: Table;
+  paymentsTable: Table;
   surveysTable: Table;
   stackName: string;
   stage: string;
@@ -79,8 +80,12 @@ export class LambdasConstruct extends Construct {
       timeout: Duration.minutes(1),
       memorySize: 512
     });
-    props.profileTable.grantReadWriteData(this.mercadoPagoLambda);
-    this.mercadoPagoLambda.addEnvironment("TABLE_NAME", props.profileTable.tableName);
+    props.profileTable.grantReadData(this.mercadoPagoLambda);
+    props.eventsTable.grantReadWriteData(this.mercadoPagoLambda);
+    props.paymentsTable.grantReadWriteData(this.mercadoPagoLambda);
+    this.mercadoPagoLambda.addEnvironment("PROFILE_TABLE_NAME", props.profileTable.tableName);
+    this.mercadoPagoLambda.addEnvironment("EVENTS_TABLE_NAME", props.eventsTable.tableName);
+    this.mercadoPagoLambda.addEnvironment("PAYMENTS_TABLE_NAME", props.paymentsTable.tableName);
     this.mercadoPagoLambda.addEnvironment("MERCADO_PAGO_ACCESS_TOKEN", MERCADO_PAGO_ACCESS_TOKEN);
     this.mercadoPagoLambda.addEnvironment("MERCADO_PAGO_ACCESS_TOKEN_TEST", MERCADO_PAGO_ACCESS_TOKEN_TEST);
   }

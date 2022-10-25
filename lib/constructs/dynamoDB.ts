@@ -17,6 +17,7 @@ export class DynamoDBConstruct extends Construct {
   public readonly profileTable: Table;
   public readonly referralTable: Table;
   public readonly eventsTable: Table;
+  public readonly paymentsTable: Table;
   public readonly surveysTable: Table;
 
   constructor(scope: Construct, id: string, props: DynamoDBConstructProps) {
@@ -74,6 +75,26 @@ export class DynamoDBConstruct extends Construct {
     this.eventsTable.addGlobalSecondaryIndex({
       indexName: "byProfileIDPlanType",
       partitionKey: { name: "profileID#PlanType", type: AttributeType.STRING },
+      projectionType: ProjectionType.ALL,
+    });
+
+    this.paymentsTable = new Table(
+      scope,
+      `${props.stackName}-PaymentsTable-${props.stage}`,
+      {
+        partitionKey: { name: "paymentID", type: AttributeType.STRING },
+        billingMode: BillingMode.PAY_PER_REQUEST,
+        removalPolicy: RemovalPolicy.DESTROY,
+      }
+    );
+    this.paymentsTable.addGlobalSecondaryIndex({
+      indexName: "byEventID",
+      partitionKey: { name: "eventID", type: AttributeType.STRING },
+      projectionType: ProjectionType.ALL,
+    });
+    this.paymentsTable.addGlobalSecondaryIndex({
+      indexName: "byProfileID",
+      partitionKey: { name: "profileID", type: AttributeType.STRING },
       projectionType: ProjectionType.ALL,
     });
 
