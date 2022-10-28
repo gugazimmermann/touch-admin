@@ -1,9 +1,23 @@
 import { APIGatewayEvent, APIGatewayProxyResult } from "aws-lambda";
 import { v4 as uuidv4 } from "uuid";
-import { EventType } from '../common/types';
+import { EventType, ReferralType } from '../common/types';
 import commonResponse from "../common/commonResponse";
 import { DocumentClient } from "aws-sdk/lib/dynamodb/document_client";
 import { PLANSTYPES } from '../common/enums';
+
+const getReferralByCode = async (db: DocumentClient, code: string, REFERRAL_TABLE: string): Promise<ReferralType> => {
+  const params = {
+    TableName: REFERRAL_TABLE,
+    IndexName: "byCode",
+    KeyConditionExpression: "#code = :code",
+    ExpressionAttributeNames: { "#code": "code" },
+    ExpressionAttributeValues: { ":code": code },
+  };
+  console.debug(`getReferralByCode params`, JSON.stringify(params, undefined, 2));
+  const res = await db.query(params).promise();
+  const referral = res.Items && res.Items.length ? res.Items[0] : {};
+  return referral as ReferralType;
+}
 
 const eventsPost = async (
   db: DocumentClient,
@@ -54,7 +68,6 @@ const eventsPost = async (
     gift: body.gift,
     prizeDraw: body.prizeDraw,
     referralCode: body.referralCode,
-    referral: body.referral,
     logo: body.logo,
     map: body.map,
     giftDescription: body.giftDescription,
@@ -64,6 +77,11 @@ const eventsPost = async (
     updatedAt: dateNow,
     deletedAt: "",
   };
+
+  if (eventData.referralCode) {
+    const referral = await getReferralByCode(db, eventData.referralCode, REFERRAL_TABLE);
+    eventData.referral = referral;
+  }
 
   const params = { TableName: EVENTS_TABLE, Item: eventData };
   console.debug(`params`, JSON.stringify(params, undefined, 2));
