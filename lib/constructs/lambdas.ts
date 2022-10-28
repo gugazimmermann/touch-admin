@@ -8,6 +8,8 @@ import { Duration } from "aws-cdk-lib";
 
 dotenv.config();
 
+const ADMIN_URL = process.env.ADMIN_URL || '';
+const PROJECT_NAME = process.env.PROJECT_NAME || '';
 const MERCADO_PAGO_ACCESS_TOKEN = process.env.MERCADO_PAGO_ACCESS_TOKEN || '';
 const MERCADO_PAGO_ACCESS_TOKEN_TEST = process.env.MERCADO_PAGO_ACCESS_TOKEN_TEST || '';
 
@@ -38,6 +40,8 @@ export class LambdasConstruct extends Construct {
       entry: join(__dirname, "..", "lambdas", "cognito.ts"),
       ...commonLambdaProps,
     });
+    this.cognitoLambda.addEnvironment("ADMIN_URL", ADMIN_URL);
+    this.cognitoLambda.addEnvironment("PROJECT_NAME", PROJECT_NAME);
 
     this.plansLambda = new NodejsFunction(scope, `${props.stackName}-PlansLambda-${props.stage}`, {
       entry: join(__dirname, "..", "lambdas", "plans.ts"),

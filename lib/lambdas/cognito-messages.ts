@@ -3,8 +3,8 @@ import { CustomMessageResponse } from './common/types';
 
 dotenv.config();
 
-const ADMIN_URL = process.env.ADMIN_URL || 'https://admin.touchsistemas.com.br/';
-const PROJECT_NAME = process.env.PROJECT_NAME || 'Touch Sistemas';
+const ADMIN_URL = process.env.ADMIN_URL || '';
+const PROJECT_NAME = process.env.PROJECT_NAME || '';
 
 const sendCodePostSignUp = (email: string, code: string): CustomMessageResponse => {
   return {
