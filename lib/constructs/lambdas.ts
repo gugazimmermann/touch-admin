@@ -80,7 +80,7 @@ export class LambdasConstruct extends Construct {
       timeout: Duration.minutes(1),
       memorySize: 512
     });
-    props.profileTable.grantReadData(this.mercadoPagoLambda);
+    props.profileTable.grantReadWriteData(this.mercadoPagoLambda);
     props.eventsTable.grantReadWriteData(this.mercadoPagoLambda);
     props.paymentsTable.grantReadWriteData(this.mercadoPagoLambda);
     this.mercadoPagoLambda.addEnvironment("PROFILE_TABLE_NAME", props.profileTable.tableName);
