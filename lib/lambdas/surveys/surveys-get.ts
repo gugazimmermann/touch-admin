@@ -2,8 +2,8 @@ import { APIGatewayEvent, APIGatewayProxyResult } from "aws-lambda";
 import commonResponse from "../common/commonResponse";
 import { DocumentClient } from "aws-sdk/lib/dynamodb/document_client";
 
-const getBySurveyID = async (db: DocumentClient, surveyID: string, requestID: string, TableName: string): Promise<APIGatewayProxyResult> => {
-  const params = { TableName, Key: { surveyID } };
+const getBySurveyID = async (db: DocumentClient, surveyID: string, requestID: string, SURVEYS_TABLE: string): Promise<APIGatewayProxyResult> => {
+  const params = { TableName: SURVEYS_TABLE, Key: { surveyID } };
   console.debug(`params`, JSON.stringify(params, undefined, 2));
   try {
     const res = await db.get(params).promise();
@@ -14,9 +14,9 @@ const getBySurveyID = async (db: DocumentClient, surveyID: string, requestID: st
   }
 }
 
-const getByEventID = async (db: DocumentClient, eventID: string, requestID: string, TableName: string): Promise<APIGatewayProxyResult> => {
+const getByEventID = async (db: DocumentClient, eventID: string, requestID: string, SURVEYS_TABLE: string): Promise<APIGatewayProxyResult> => {
   const params = {
-    TableName: TableName,
+    TableName: SURVEYS_TABLE,
     IndexName: "byEventID",
     KeyConditionExpression: "#eventID = :eventID",
     ExpressionAttributeNames: { "#eventID": "eventID" },
@@ -32,9 +32,9 @@ const getByEventID = async (db: DocumentClient, eventID: string, requestID: stri
   }
 }
 
-const getByProfileID = async (db: DocumentClient, profileID: string, requestID: string, TableName: string): Promise<APIGatewayProxyResult> => {
+const getByProfileID = async (db: DocumentClient, profileID: string, requestID: string, SURVEYS_TABLE: string): Promise<APIGatewayProxyResult> => {
   const params = {
-    TableName: TableName,
+    TableName: SURVEYS_TABLE,
     IndexName: "byProfileID",
     KeyConditionExpression: "#profileID = :profileID",
     ExpressionAttributeNames: { "#profileID": "profileID" },
@@ -51,13 +51,13 @@ const getByProfileID = async (db: DocumentClient, profileID: string, requestID: 
 }
 
 
-const surveysGet = async (db: DocumentClient, event: APIGatewayEvent, requestID: string, TableName: string): Promise<APIGatewayProxyResult> => {
+const surveysGet = async (db: DocumentClient, event: APIGatewayEvent, requestID: string, SURVEYS_TABLE: string): Promise<APIGatewayProxyResult> => {
   const surveyID = event?.pathParameters && event.pathParameters?.surveyID;
-  if (surveyID) return getBySurveyID(db, surveyID, requestID, TableName);
+  if (surveyID) return getBySurveyID(db, surveyID, requestID, SURVEYS_TABLE);
   const eventID = event?.pathParameters && event.pathParameters?.eventID;
-  if (eventID) return getByEventID(db, eventID as string, requestID, TableName);
+  if (eventID) return getByEventID(db, eventID as string, requestID, SURVEYS_TABLE);
   const profileID = event?.pathParameters && event.pathParameters?.profileID;
-  return getByProfileID(db, profileID as string, requestID, TableName);
+  return getByProfileID(db, profileID as string, requestID, SURVEYS_TABLE);
 };
 
 export default surveysGet;

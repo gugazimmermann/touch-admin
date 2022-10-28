@@ -6,7 +6,7 @@ const profilePut = async (
   db: DocumentClient,
   event: APIGatewayEvent,
   requestID: string,
-  TableName: string
+  PROFILE_TABLE: string
 ): Promise<APIGatewayProxyResult> => {
   const body = event?.body ? JSON.parse(event.body) : null;
 
@@ -19,7 +19,7 @@ const profilePut = async (
   const dateNow = Date.now().toString();
 
   const params = {
-    TableName,
+    TableName: PROFILE_TABLE,
     Key: { profileID: body.profileID },
     UpdateExpression:
       "set #phone = :phone, #name = :name, #documenttype = :documenttype, #document = :document, #zipCode = :zipCode, #state = :state, #city = :city, #district = :district, #street = :street, #number = :number, #complement = :complement, #website = :website, #logo = :logo, #map = :map, #updatedAt = :updatedAt",

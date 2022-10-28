@@ -6,10 +6,10 @@ import { DocumentClient } from "aws-sdk/lib/dynamodb/document_client";
 
 const dateNow = Date.now().toString();
 
-const patchLogoAndMap = async (db: DocumentClient, profileID: string, body: { logo?: string; map?: string; }, requestID: string, TableName: string): Promise<APIGatewayProxyResult> => {
+const patchLogoAndMap = async (db: DocumentClient, profileID: string, body: { logo?: string; map?: string; }, requestID: string, PROFILE_TABLE: string): Promise<APIGatewayProxyResult> => {
   console.debug(`body`, JSON.stringify(body, undefined, 2));
   const params = {
-    TableName,
+    TableName: PROFILE_TABLE,
     Key: { profileID },
     UpdateExpression: "set #logo = :logo, #map = :map",
     ExpressionAttributeValues: { ":logo": body.logo, ":map": body.map },
@@ -26,11 +26,11 @@ const patchLogoAndMap = async (db: DocumentClient, profileID: string, body: { lo
   }
 }
 
-const patchOwers = async (db: DocumentClient, profileID: string, body: OwnerType, requestID: string, TableName: string): Promise<APIGatewayProxyResult> => {
+const patchOwers = async (db: DocumentClient, profileID: string, body: OwnerType, requestID: string, PROFILE_TABLE: string): Promise<APIGatewayProxyResult> => {
   if (!body || !body.name || !body.email || !body.phone) return commonResponse(400, JSON.stringify({ message: 'Missing Data', requestID }))
   let ownersList: OwnerType[] = [];
   const queryParams = {
-    TableName,
+    TableName: PROFILE_TABLE,
     Key: { profileID },
     ProjectionExpression: "#owners",
     ExpressionAttributeNames: { "#owners": "owners" },
@@ -67,7 +67,7 @@ const patchOwers = async (db: DocumentClient, profileID: string, body: OwnerType
   }
   console.debug(`ownersList`, JSON.stringify(ownersList, undefined, 2));
   const params = {
-    TableName,
+    TableName: PROFILE_TABLE,
     Key: { profileID },
     UpdateExpression: "set #owners = :owners, #updatedAt = :updatedAt",
     ExpressionAttributeValues: { ":owners": ownersList, ":updatedAt": dateNow },
@@ -84,10 +84,10 @@ const patchOwers = async (db: DocumentClient, profileID: string, body: OwnerType
   }
 }
 
-const deleteOwner = async (db: DocumentClient, profileID: string, ownerID: string, requestID: string, TableName: string): Promise<APIGatewayProxyResult> => {
+const deleteOwner = async (db: DocumentClient, profileID: string, ownerID: string, requestID: string, PROFILE_TABLE: string): Promise<APIGatewayProxyResult> => {
   let ownersList: OwnerType[] = [];
   const queryParams = {
-    TableName,
+    TableName: PROFILE_TABLE,
     Key: { profileID },
     ProjectionExpression: "#owners",
     ExpressionAttributeNames: { "#owners": "owners" },
@@ -102,7 +102,7 @@ const deleteOwner = async (db: DocumentClient, profileID: string, ownerID: strin
   ownersList = ownersList.filter(o => o.ownerID !== ownerID);
   console.debug(`ownersList`, JSON.stringify(ownersList, undefined, 2));
   const params = {
-    TableName,
+    TableName: PROFILE_TABLE,
     Key: { profileID },
     UpdateExpression: "set #owners = :owners, #updatedAt = :updatedAt",
     ExpressionAttributeValues: { ":owners": ownersList, ":updatedAt": dateNow },
@@ -119,9 +119,9 @@ const deleteOwner = async (db: DocumentClient, profileID: string, ownerID: strin
   }
 }
 
-const patchEmail = async (db: DocumentClient, profileID: string, email: string, requestID: string, TableName: string): Promise<APIGatewayProxyResult> => {
+const patchEmail = async (db: DocumentClient, profileID: string, email: string, requestID: string, PROFILE_TABLE: string): Promise<APIGatewayProxyResult> => {
   const queryParams = {
-    TableName,
+    TableName: PROFILE_TABLE,
     Key: { profileID },
     ProjectionExpression: "#email",
     ExpressionAttributeNames: { "#email": "email" },
@@ -135,7 +135,7 @@ const patchEmail = async (db: DocumentClient, profileID: string, email: string, 
     return commonResponse(500, JSON.stringify(error));
   }
   const params = {
-    TableName,
+    TableName: PROFILE_TABLE,
     Key: { profileID },
     UpdateExpression: "set #email = :email, #updatedAt = :updatedAt",
     ExpressionAttributeValues: { ":email": email, ":updatedAt": dateNow },
@@ -152,21 +152,21 @@ const patchEmail = async (db: DocumentClient, profileID: string, email: string, 
   }
 }
 
-const profilePatch = async (db: DocumentClient, event: APIGatewayEvent, requestID: string, TableName: string): Promise<APIGatewayProxyResult> => {
+const profilePatch = async (db: DocumentClient, event: APIGatewayEvent, requestID: string, PROFILE_TABLE: string): Promise<APIGatewayProxyResult> => {
   const profileID = event?.pathParameters && event.pathParameters?.profileID;
   if (!profileID) return commonResponse(400, JSON.stringify({ message: 'Missing Data', requestID }))
 
   const body = event?.body ? JSON.parse(event.body) : null;
 
-  if (event.resource.includes('logomap')) return patchLogoAndMap(db, profileID, body, requestID, TableName);
+  if (event.resource.includes('logomap')) return patchLogoAndMap(db, profileID, body, requestID, PROFILE_TABLE);
   else if (event.resource.includes('owners')) {
     const ownerID = event?.pathParameters && event.pathParameters?.ownerID;
-    if (ownerID) return deleteOwner(db, profileID, ownerID, requestID, TableName)
-    return patchOwers(db, profileID, body, requestID, TableName);
+    if (ownerID) return deleteOwner(db, profileID, ownerID, requestID, PROFILE_TABLE)
+    return patchOwers(db, profileID, body, requestID, PROFILE_TABLE);
   }
   else {
     if (!body || !body.email) return commonResponse(400, JSON.stringify({ message: 'Missing Data', requestID }))
-    return patchEmail(db, profileID, body.email, requestID, TableName);
+    return patchEmail(db, profileID, body.email, requestID, PROFILE_TABLE);
   }
 };
 

@@ -3,14 +3,14 @@ import * as AWSSDK from 'aws-sdk';
 import { APIGatewayEvent, APIGatewayProxyResult, Context } from "aws-lambda";
 import commonResponse from "./common/commonResponse";
 
-const TABLE_NAME = process.env.TABLE_NAME || "";
+const PLANS_TABLE = process.env.PLANS_TABLE || "";
 const AWS = AWSXRay.captureAWS(AWSSDK);
 const db = new AWS.DynamoDB.DocumentClient();
 
 export const handler = async (event: APIGatewayEvent, context: Context ): Promise<APIGatewayProxyResult> => {
   console.debug(`event`, JSON.stringify(event, undefined, 2));
   const requestID = context.awsRequestId;
-  const params = { TableName: TABLE_NAME };
+  const params = { TableName: PLANS_TABLE };
   console.debug(`params`, JSON.stringify(params, undefined, 2));
   try {
     const res = await db.scan(params).promise();

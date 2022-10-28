@@ -3,12 +3,12 @@ import * as AWSSDK from 'aws-sdk';
 import { APIGatewayEvent, APIGatewayProxyResult, Context } from "aws-lambda";
 import commonResponse from "./common/commonResponse";
 
-const TABLE_NAME = process.env.TABLE_NAME || "";
+const REFERRAL_TABLE = process.env.REFERRAL_TABLE || "";
 const AWS = AWSXRay.captureAWS(AWSSDK);
 const db = new AWS.DynamoDB.DocumentClient();
 
 const getAll = async (requestID: string): Promise<APIGatewayProxyResult> => {
-  const params = { TableName: TABLE_NAME };
+  const params = { TableName: REFERRAL_TABLE };
   console.debug(`params`, JSON.stringify(params, undefined, 2));
   try {
     const res = await db.scan(params).promise();
@@ -21,7 +21,7 @@ const getAll = async (requestID: string): Promise<APIGatewayProxyResult> => {
 
 const getByCode = async (code: string, requestID: string): Promise<APIGatewayProxyResult> => {
   const params = {
-    TableName: TABLE_NAME,
+    TableName: REFERRAL_TABLE,
     IndexName: "byCode",
     KeyConditionExpression: "#code = :code",
     ExpressionAttributeNames: { "#code": "code" },
@@ -38,7 +38,7 @@ const getByCode = async (code: string, requestID: string): Promise<APIGatewayPro
 }
 
 const getByID = async (referralID: string, requestID: string): Promise<APIGatewayProxyResult> => {
-  const params = { TableName: TABLE_NAME, Key: { referralID } };
+  const params = { TableName: REFERRAL_TABLE, Key: { referralID } };
   console.debug(`params`, JSON.stringify(params, undefined, 2));
   try {
     const res = await db.get(params).promise();

@@ -44,35 +44,37 @@ export class LambdasConstruct extends Construct {
       ...commonLambdaProps,
     });
     props.plansTable.grantReadData(this.plansLambda);
-    this.plansLambda.addEnvironment("TABLE_NAME", props.plansTable.tableName);
+    this.plansLambda.addEnvironment("PLANS_TABLE", props.plansTable.tableName);
 
     this.profileLambda = new NodejsFunction(scope, `${props.stackName}-ProfileLambda-${props.stage}`, {
       entry: join(__dirname, "..", "lambdas", "profile.ts"),
       ...commonLambdaProps,
     });
     props.profileTable.grantReadWriteData(this.profileLambda);
-    this.profileLambda.addEnvironment("TABLE_NAME", props.profileTable.tableName);
+    this.profileLambda.addEnvironment("PROFILE_TABLE", props.profileTable.tableName);
 
     this.referralsLambda = new NodejsFunction(scope, `${props.stackName}-ReferralsLambda-${props.stage}`, {
       entry: join(__dirname, "..", "lambdas", "referrals.ts"),
       ...commonLambdaProps,
     });
     props.referralTable.grantReadData(this.referralsLambda);
-    this.referralsLambda.addEnvironment("TABLE_NAME", props.referralTable.tableName);
+    this.referralsLambda.addEnvironment("REFERRAL_TABLE", props.referralTable.tableName);
 
     this.eventsLambda = new NodejsFunction(scope, `${props.stackName}-EventsLambda-${props.stage}`, {
       entry: join(__dirname, "..", "lambdas", "events.ts"),
       ...commonLambdaProps,
     });
+    props.referralTable.grantReadData(this.eventsLambda);
     props.eventsTable.grantReadWriteData(this.eventsLambda);
-    this.eventsLambda.addEnvironment("TABLE_NAME", props.eventsTable.tableName);
+    this.eventsLambda.addEnvironment("REFERRAL_TABLE", props.referralTable.tableName);
+    this.eventsLambda.addEnvironment("EVENTS_TABLE", props.eventsTable.tableName);
 
     this.surveysLambda = new NodejsFunction(scope, `${props.stackName}-SurveysLambda-${props.stage}`, {
       entry: join(__dirname, "..", "lambdas", "surveys.ts"),
       ...commonLambdaProps,
     });
     props.surveysTable.grantReadWriteData(this.surveysLambda);
-    this.surveysLambda.addEnvironment("TABLE_NAME", props.surveysTable.tableName);
+    this.surveysLambda.addEnvironment("SURVEYS_TABLE", props.surveysTable.tableName);
 
     this.mercadoPagoLambda = new NodejsFunction(scope, `${props.stackName}-MercadoPagoLambda-${props.stage}`, {
       entry: join(__dirname, "..", "lambdas", "mercadopago.ts"),
@@ -83,9 +85,9 @@ export class LambdasConstruct extends Construct {
     props.profileTable.grantReadWriteData(this.mercadoPagoLambda);
     props.eventsTable.grantReadWriteData(this.mercadoPagoLambda);
     props.paymentsTable.grantReadWriteData(this.mercadoPagoLambda);
-    this.mercadoPagoLambda.addEnvironment("PROFILE_TABLE_NAME", props.profileTable.tableName);
-    this.mercadoPagoLambda.addEnvironment("EVENTS_TABLE_NAME", props.eventsTable.tableName);
-    this.mercadoPagoLambda.addEnvironment("PAYMENTS_TABLE_NAME", props.paymentsTable.tableName);
+    this.mercadoPagoLambda.addEnvironment("PROFILE_TABLE", props.profileTable.tableName);
+    this.mercadoPagoLambda.addEnvironment("EVENTS_TABLE", props.eventsTable.tableName);
+    this.mercadoPagoLambda.addEnvironment("PAYMENTS_TABLE", props.paymentsTable.tableName);
     this.mercadoPagoLambda.addEnvironment("MERCADO_PAGO_ACCESS_TOKEN", MERCADO_PAGO_ACCESS_TOKEN);
     this.mercadoPagoLambda.addEnvironment("MERCADO_PAGO_ACCESS_TOKEN_TEST", MERCADO_PAGO_ACCESS_TOKEN_TEST);
   }

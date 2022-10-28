@@ -9,7 +9,8 @@ const eventsPost = async (
   db: DocumentClient,
   event: APIGatewayEvent,
   requestID: string,
-  TableName: string
+  EVENTS_TABLE: string,
+  REFERRAL_TABLE: string
 ): Promise<APIGatewayProxyResult> => {
   const body: EventType = event?.body ? JSON.parse(event.body) : null;
 
@@ -64,7 +65,7 @@ const eventsPost = async (
     deletedAt: "",
   };
 
-  const params = { TableName, Item: eventData };
+  const params = { TableName: EVENTS_TABLE, Item: eventData };
   console.debug(`params`, JSON.stringify(params, undefined, 2));
 
   try {

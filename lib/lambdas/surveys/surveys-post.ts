@@ -9,7 +9,7 @@ const surveysPost = async (
   db: DocumentClient,
   event: APIGatewayEvent,
   requestID: string,
-  TableName: string
+  SURVEYS_TABLE: string
 ): Promise<APIGatewayProxyResult> => {
   const body: SurveyType = event?.body ? JSON.parse(event.body) : null;
 
@@ -49,7 +49,7 @@ const surveysPost = async (
     deletedAt: "",
   };
 
-  const params = { TableName, Item: surveyData };
+  const params = { TableName: SURVEYS_TABLE, Item: surveyData };
   console.debug(`params`, JSON.stringify(params, undefined, 2));
 
   try {

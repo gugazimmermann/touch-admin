@@ -2,8 +2,8 @@ import { APIGatewayEvent, APIGatewayProxyResult } from "aws-lambda";
 import commonResponse from "../common/commonResponse";
 import { DocumentClient } from "aws-sdk/lib/dynamodb/document_client";
 
-const getOne = async (db: DocumentClient, profileID: string, requestID: string, TableName: string): Promise<APIGatewayProxyResult> => {
-  const params = { TableName, Key: { profileID } };
+const getOne = async (db: DocumentClient, profileID: string, requestID: string, PROFILE_TABLE: string): Promise<APIGatewayProxyResult> => {
+  const params = { TableName: PROFILE_TABLE, Key: { profileID } };
   console.debug(`params`, JSON.stringify(params, undefined, 2));
   try {
     const res = await db.get(params).promise();
@@ -14,8 +14,8 @@ const getOne = async (db: DocumentClient, profileID: string, requestID: string, 
   }
 }
 
-const getAll = async (db: DocumentClient, requestID: string, TableName: string): Promise<APIGatewayProxyResult> => {
-  const params = { TableName };
+const getAll = async (db: DocumentClient, requestID: string, PROFILE_TABLE: string): Promise<APIGatewayProxyResult> => {
+  const params = { TableName: PROFILE_TABLE };
   console.debug(`params`, JSON.stringify(params, undefined, 2));
   try {
     const res = await db.scan(params).promise();
@@ -26,10 +26,10 @@ const getAll = async (db: DocumentClient, requestID: string, TableName: string):
   }
 }
 
-const profileGet = async (db: DocumentClient, event: APIGatewayEvent, requestID: string, TableName: string): Promise<APIGatewayProxyResult> => {
+const profileGet = async (db: DocumentClient, event: APIGatewayEvent, requestID: string, PROFILE_TABLE: string): Promise<APIGatewayProxyResult> => {
   const profileID = event?.pathParameters && event.pathParameters?.profileID;
-  if (profileID) return getOne(db, profileID, requestID, TableName);
-  return getAll(db, requestID, TableName);
+  if (profileID) return getOne(db, profileID, requestID, PROFILE_TABLE);
+  return getAll(db, requestID, PROFILE_TABLE);
 };
 
 export default profileGet;

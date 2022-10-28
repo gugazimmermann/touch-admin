@@ -3,7 +3,7 @@ import { ProfileType } from "../common/types";
 import commonResponse from "../common/commonResponse";
 import { DocumentClient } from "aws-sdk/lib/dynamodb/document_client";
 
-const profilePost = async (db: DocumentClient, event: APIGatewayEvent, requestID: string, TableName: string): Promise<APIGatewayProxyResult> => {
+const profilePost = async (db: DocumentClient, event: APIGatewayEvent, requestID: string, PROFILE_TABLE: string): Promise<APIGatewayProxyResult> => {
   
   const body = event?.body ? JSON.parse(event.body) : null;
 
@@ -18,7 +18,7 @@ const profilePost = async (db: DocumentClient, event: APIGatewayEvent, requestID
     updatedAt: dateNow
   };
 
-  const params = { TableName, Item: profile };
+  const params = { TableName: PROFILE_TABLE, Item: profile };
   console.debug(`params`, JSON.stringify(params, undefined, 2));
   
   try {

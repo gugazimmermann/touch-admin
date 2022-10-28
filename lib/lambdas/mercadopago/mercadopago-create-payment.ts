@@ -42,9 +42,9 @@ const createPayment = async (
   db: DocumentClient,
   event: APIGatewayEvent,
   requestID: string,
-  PROFILE_TABLE_NAME: string,
-  EVENTS_TABLE_NAME: string,
-  PAYMENTS_TABLE_NAME: string,
+  PROFILE_TABLE: string,
+  EVENTS_TABLE: string,
+  PAYMENTS_TABLE: string,
 ): Promise<APIGatewayProxyResult> => {
   const body = (event?.body ? JSON.parse(event.body) : {}) as PaymentDataType;
 
@@ -61,8 +61,8 @@ const createPayment = async (
   )
     return commonResponse(400,JSON.stringify({ message: "Missing Data", requestID }));
 
-  const profile = await getProfile(db, PROFILE_TABLE_NAME, body.profileID);
-  const eventData = await getEvent(db, EVENTS_TABLE_NAME, body.eventID);
+  const profile = await getProfile(db, PROFILE_TABLE, body.profileID);
+  const eventData = await getEvent(db, EVENTS_TABLE, body.eventID);
   const paymentData: PaymentData = {
     additional_info: {
       items: [
@@ -107,7 +107,7 @@ const createPayment = async (
   const paymentRes = await mercadoPagoPayment(paymentData);
 
   const params = {
-    TableName: EVENTS_TABLE_NAME,
+    TableName: EVENTS_TABLE,
     Key: { eventID: body.eventID },
     UpdateExpression: "set #payment = :payment",
     ExpressionAttributeValues: { ":payment": paymentRes },
@@ -126,7 +126,7 @@ const createPayment = async (
     return commonResponse(500, JSON.stringify({ error, requestID }));
   }
 
-  const paymentParams = { TableName: PAYMENTS_TABLE_NAME, Item: {
+  const paymentParams = { TableName: PAYMENTS_TABLE, Item: {
     paymentID: `${paymentRes?.id}`,
     profileID: profile?.profileID,
     eventID: eventData?.eventID,

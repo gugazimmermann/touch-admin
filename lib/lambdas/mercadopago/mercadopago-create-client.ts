@@ -63,7 +63,7 @@ const update = async (id: UUID, client: IMercadoPagoClient): Promise<IMercadoPag
   }
 };
 
-const createClient = async (db: DocumentClient, event: APIGatewayEvent, requestID: string, TableName: string): Promise<APIGatewayProxyResult> => {
+const createClient = async (db: DocumentClient, event: APIGatewayEvent, requestID: string, PROFILE_TABLE: string): Promise<APIGatewayProxyResult> => {
   const body = event?.body ? JSON.parse(event.body) : null;
 
   if (!body || !body.profileID || !body.profile) return commonResponse(400, JSON.stringify({ message: "Missing Data", requestID }));
@@ -81,7 +81,7 @@ const createClient = async (db: DocumentClient, event: APIGatewayEvent, requestI
     client = await create(clientData);
   }
   const params = {
-    TableName,
+    TableName: PROFILE_TABLE,
     Key: { profileID: body.profileID },
     UpdateExpression: "set #mercadopago = :mercadopago",
     ExpressionAttributeValues: { ":mercadopago": client },

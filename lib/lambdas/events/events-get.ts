@@ -2,8 +2,8 @@ import { APIGatewayEvent, APIGatewayProxyResult } from "aws-lambda";
 import commonResponse from "../common/commonResponse";
 import { DocumentClient } from "aws-sdk/lib/dynamodb/document_client";
 
-const getByEventID = async (db: DocumentClient, eventID: string, requestID: string, TableName: string): Promise<APIGatewayProxyResult> => {
-  const params = { TableName, Key: { eventID } };
+const getByEventID = async (db: DocumentClient, eventID: string, requestID: string, EVENTS_TABLE: string): Promise<APIGatewayProxyResult> => {
+  const params = { TableName: EVENTS_TABLE, Key: { eventID } };
   console.debug(`params`, JSON.stringify(params, undefined, 2));
   try {
     const res = await db.get(params).promise();
@@ -14,9 +14,9 @@ const getByEventID = async (db: DocumentClient, eventID: string, requestID: stri
   }
 }
 
-const getByProfileID = async (db: DocumentClient, profileID: string, requestID: string, TableName: string): Promise<APIGatewayProxyResult> => {
+const getByProfileID = async (db: DocumentClient, profileID: string, requestID: string, EVENTS_TABLE: string): Promise<APIGatewayProxyResult> => {
   const params = {
-    TableName: TableName,
+    TableName: EVENTS_TABLE,
     IndexName: "byProfileID",
     KeyConditionExpression: "#profileID = :profileID",
     ExpressionAttributeNames: { "#profileID": "profileID" },
@@ -32,11 +32,11 @@ const getByProfileID = async (db: DocumentClient, profileID: string, requestID: 
   }
 }
 
-const eventsGet = async (db: DocumentClient, event: APIGatewayEvent, requestID: string, TableName: string): Promise<APIGatewayProxyResult> => {
+const eventsGet = async (db: DocumentClient, event: APIGatewayEvent, requestID: string, EVENTS_TABLE: string): Promise<APIGatewayProxyResult> => {
   const eventID = event?.pathParameters && event.pathParameters?.eventID;
-  if (eventID) return getByEventID(db, eventID, requestID, TableName);
+  if (eventID) return getByEventID(db, eventID, requestID, EVENTS_TABLE);
   const profileID = event?.pathParameters && event.pathParameters?.profileID;
-  return getByProfileID(db, profileID as string, requestID, TableName);
+  return getByProfileID(db, profileID as string, requestID, EVENTS_TABLE);
 };
 
 export default eventsGet;
