@@ -14,12 +14,6 @@ const headers = {
   "Content-Type": "application/json",
 };
 
-const getProfile = async (db: DocumentClient, TableName: string, profileID: UUID): Promise<ProfileType> => {
-  const params = { TableName, Key: { profileID } };
-  const res = await db.get(params).promise();
-  return (res.Item || {}) as ProfileType;
-}
-
 const createClientData = (profile: ProfileType): IMercadoPagoClient => {
   const m = profile.name ? profile.name.split(" ") : [];
   const p = profile.phone?.replace(/[^\d]/g, "").slice(2);
@@ -72,11 +66,9 @@ const update = async (id: UUID, client: IMercadoPagoClient): Promise<IMercadoPag
 const createClient = async (db: DocumentClient, event: APIGatewayEvent, requestID: string, TableName: string): Promise<APIGatewayProxyResult> => {
   const body = event?.body ? JSON.parse(event.body) : null;
 
-  if (!body || !body.profileID) return commonResponse(400, JSON.stringify({ message: "Missing Data", requestID }));
+  if (!body || !body.profileID || !body.profile) return commonResponse(400, JSON.stringify({ message: "Missing Data", requestID }));
 
-  const profile = await getProfile(db, TableName, body.profileID);
-  if (!profile.profileID) return commonResponse(404, JSON.stringify({ error: 'profile not found', requestID }));
-
+  const profile = body.profile as ProfileType;
   let client = {};
 
   let clientExists = await seeExists(profile.email as string);
@@ -90,7 +82,7 @@ const createClient = async (db: DocumentClient, event: APIGatewayEvent, requestI
   }
   const params = {
     TableName,
-    Key: { profileID: profile.profileID },
+    Key: { profileID: body.profileID },
     UpdateExpression: "set #mercadopago = :mercadopago",
     ExpressionAttributeValues: { ":mercadopago": client },
     ExpressionAttributeNames: { "#mercadopago": "mercadopago" },
