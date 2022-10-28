@@ -61,7 +61,7 @@ const eventsPost = async (
     description: body.description,
     createdAt: dateNow,
     updatedAt: dateNow,
-    deleteddAt: "",
+    deletedAt: "",
   };
 
   const params = { TableName, Item: eventData };

@@ -6,7 +6,7 @@ export type UUID = string;
 interface IDBDates {
   createdAt?: string;
   updatedAt?: string;
-  deleteddAt?: string;
+  deletedAt?: string;
 }
 
 export interface IContacts {

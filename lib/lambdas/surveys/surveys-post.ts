@@ -46,7 +46,7 @@ const surveysPost = async (
     surveys: simpleSurvey,
     createdAt: dateNow,
     updatedAt: dateNow,
-    deleteddAt: "",
+    deletedAt: "",
   };
 
   const params = { TableName, Item: surveyData };
