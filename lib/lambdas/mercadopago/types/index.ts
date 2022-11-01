@@ -1,6 +1,6 @@
-import { UUID } from "./types";
+import { UUID } from "../../common/types";
 
-export interface IMercadoPagoClientData {
+export type MPClientDataType = {
   address?: {
     id?: string;
     zip_code?: string;
@@ -34,10 +34,10 @@ export interface IMercadoPagoClientData {
   };
 }
 
-export interface IMercadoPagoClient {
+export type MPClientType = {
   clientID: string;
   profileID: string;
-  cient: IMercadoPagoClientData;
+  cient: MPClientDataType;
 }
 
 type PaymentMethodsPayerCostsType = {
@@ -145,7 +145,7 @@ type PaymentInstallmentPayerCostsType = {
   payment_method_option_id: string;
 };
 
-export type PaymentFormType = {
+type PaymentFormType = {
   cardholderName?: string;
   documentType?: string;
   document?: string;
@@ -168,7 +168,7 @@ type PaymentCardTokenCardholderType = {
   name: string;
 };
 
-export type PaymentCardTokenType = {
+export type MPCardTokenType = {
   id: string;
   public_key: string;
   first_six_digits: string;
@@ -187,7 +187,7 @@ export type PaymentCardTokenType = {
   security_code_length: number;
 };
 
-export interface PaymentDataType extends PaymentFormType {
+export interface MPPaymentType extends PaymentFormType {
   profileID: UUID;
   eventID: UUID;
   installments: number;
@@ -200,7 +200,7 @@ export interface PaymentDataType extends PaymentFormType {
   token: string;
 }
 
-export type PaymentData = {
+export type MPPaymentPayloadType = {
   additional_info: {
     items: [
       {
@@ -244,7 +244,7 @@ export type PaymentData = {
   transaction_amount: number;
 };
 
-export type PaymentRes = {
+export type MPPaymentResponseType = {
   id: number;
   date_created: string;
   date_approved: string;
@@ -389,7 +389,7 @@ export type PaymentRes = {
   };
 };
 
-export type SubscriptionData = {
+export type MPSubscriptionPayloadType = {
   reason: string;
   external_reference: string;
   payer_email: string;
@@ -404,7 +404,7 @@ export type SubscriptionData = {
   status: "authorized";
 };
 
-export type SubscriptionRes = {
+export type MPSubscriptionResponseType = {
   id: string;
   version: number;
   application_id: number;

@@ -1,22 +1,13 @@
 import { APIGatewayEvent, APIGatewayProxyResult } from "aws-lambda";
-import axios from "axios";
 import { DocumentClient } from "aws-sdk/lib/dynamodb/document_client";
 import commonResponse from "../common/commonResponse";
 import { ProfileType, UUID } from '../common/types';
-import { IMercadoPagoClientData } from "../common/types-mercadopago";
-import axiosErrorHandling from "../common/axiosErrorHandling";
-import getProfileByID from '../utils/get-profile-by-id';
-import getClientByProfileID from "./get-client-by-profileID";
+import { getProfileByID } from "../utils";
+import { getClientByProfileID } from "./utils/db";
+import { MPClientDataType } from "./types";
+import { clientGet, clientUpdate, clientCreate } from './utils/api';
 
-const MERCADO_PAGO_ACCESS_TOKEN = process.env.MERCADO_PAGO_ACCESS_TOKEN || "";
-const MERCADO_PAGO_ACCESS_TOKEN_TEST = process.env.MERCADO_PAGO_ACCESS_TOKEN_TEST || "";
-
-const headers = {
-  Authorization: `Bearer ${MERCADO_PAGO_ACCESS_TOKEN_TEST}`,
-  "Content-Type": "application/json",
-};
-
-const createClientData = (profile: ProfileType): IMercadoPagoClientData => {
+const createClientData = (profile: ProfileType): MPClientDataType => {
   const m = profile.name ? profile.name.split(" ") : [];
   const p = profile.phone?.replace(/[^\d]/g, "").slice(2);
   return {
@@ -40,47 +31,22 @@ const createClientData = (profile: ProfileType): IMercadoPagoClientData => {
   }
 }
 
-const seeExists = async (email: string): Promise<IMercadoPagoClientData> => {
-  const { data } = await axios.get(`https://api.mercadopago.com/v1/customers/search?email=${email}`, { headers });
-  return data.results && data.results[0] ? data.results[0] : undefined;
-};
-
-const create = async (client: IMercadoPagoClientData): Promise<IMercadoPagoClientData> => {
-  try {
-    const { data } = await axios.post(`https://api.mercadopago.com/v1/customers`, client, { headers });
-    return data;
-  } catch (error) {
-    console.log("create error", axiosErrorHandling(error));
-    return {} as IMercadoPagoClientData;
-  }
-};
-
-const update = async (id: UUID, client: IMercadoPagoClientData): Promise<IMercadoPagoClientData> => {
-  try {
-    const { data } = await axios.put(`https://api.mercadopago.com/v1/customers/${id}`, client, { headers });
-    return data;
-  } catch (error) {
-    console.log("update error", axiosErrorHandling(error));
-    return {} as IMercadoPagoClientData;
-  }
-};
-
 const createClient = async (db: DocumentClient, event: APIGatewayEvent, requestID: string, PROFILE_TABLE: string, MERCADOPAGOCLIENTS_TABLE: string): Promise<APIGatewayProxyResult> => {
   const body = event?.body ? JSON.parse(event.body) : null;
 
   if (!body || !body.profileID) return commonResponse(400, JSON.stringify({ message: "Missing Data", requestID }));
 
-  let client = {} as IMercadoPagoClientData;
+  let client = {} as MPClientDataType;
 
   const profile = await getProfileByID(db, body.profileID, PROFILE_TABLE);
 
-  let clientExists = await seeExists(profile.email as string);
+  let clientExists = await clientGet(profile.email as string);
   const clientData = createClientData(profile);
-  if (clientExists) {
+  if (clientExists?.id) {
     delete clientData.email;
-    client = await update(clientExists.id as UUID, clientData);
+    client = await clientUpdate(clientExists.id as UUID, clientData);
   } else {
-    client = await create(clientData);
+    client = await clientCreate(clientData);
   }
 
   const mercadoPagoClient = await getClientByProfileID(db, profile.profileID, MERCADOPAGOCLIENTS_TABLE);

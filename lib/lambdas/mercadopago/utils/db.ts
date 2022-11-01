@@ -1,7 +1,7 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { IMercadoPagoClientData } from "../common/types-mercadopago";
+import { MPClientDataType } from "../types";
 
-const getClientByProfileID = async (db: DocumentClient, profileID: string, TableName: string): Promise<IMercadoPagoClientData | undefined> => {
+export const getClientByProfileID = async (db: DocumentClient, profileID: string, TableName: string): Promise<MPClientDataType> => {
   const params = {
     TableName,
     IndexName: "byProfileID",
@@ -10,7 +10,6 @@ const getClientByProfileID = async (db: DocumentClient, profileID: string, Table
     ExpressionAttributeValues: { ":profileID": profileID },
   };
   const res = await db.query(params).promise();
-  return res.Items ? res.Items[0]?.client as IMercadoPagoClientData : undefined;
+  return (res.Items ? res.Items[0]?.client : {}) as MPClientDataType;
 }
 
-export default getClientByProfileID;
