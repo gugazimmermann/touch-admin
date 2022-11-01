@@ -1,6 +1,6 @@
 import { UUID } from "./types";
 
-export interface IMercadoPagoClient {
+export interface IMercadoPagoClientData {
   address?: {
     id?: string;
     zip_code?: string;
@@ -32,6 +32,12 @@ export interface IMercadoPagoClient {
     area_code?: string;
     number?: string;
   };
+}
+
+export interface IMercadoPagoClient {
+  clientID: string;
+  profileID: string;
+  cient: IMercadoPagoClientData;
 }
 
 type PaymentMethodsPayerCostsType = {
@@ -189,7 +195,7 @@ export interface PaymentDataType extends PaymentFormType {
   identification: {
     type: string;
     number: string;
-  },
+  };
   payment_method_id: string;
   token: string;
 }
@@ -295,7 +301,7 @@ export type PaymentRes = {
         title: string;
         description: string;
         picture_url: any;
-        category_id:string;
+        category_id: string;
         quantity: string;
         unit_price: string;
       }
@@ -381,4 +387,50 @@ export type PaymentRes = {
       sub_unit: string;
     };
   };
+};
+
+export type SubscriptionData = {
+  reason: string;
+  external_reference: string;
+  payer_email: string;
+  card_token_id: string;
+  auto_recurring: {
+    frequency: number;
+    frequency_type: "days" | "months";
+    transaction_amount: number;
+    currency_id: "ARS" | "BRL" | "CLP" | "MXN" | "COP" | "PEN" | "UYU";
+  };
+  back_url: string;
+  status: "authorized";
+};
+
+export type SubscriptionRes = {
+  id: string;
+  version: number;
+  application_id: number;
+  collector_id: number;
+  preapproval_plan_id: string;
+  reason: string;
+  external_reference: number;
+  back_url: string;
+  init_point: string;
+  auto_recurring: {
+    frequency: 1;
+    frequency_type: string;
+    start_date: string;
+    end_date: string;
+    currency_id: string;
+    transaction_amount: 10;
+    free_trial: {
+      frequency: 1;
+      frequency_type: string;
+    };
+  };
+  payer_id: number;
+  card_id: number;
+  payment_method_id: number;
+  next_payment_date: string;
+  date_created: string;
+  last_modified: string;
+  status: string;
 };
