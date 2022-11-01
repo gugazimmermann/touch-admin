@@ -9,8 +9,8 @@ import createSubscription from './mercadopago/mercadopago-create-subscription';
 const PROFILE_TABLE = process.env.PROFILE_TABLE || "";
 const EVENTS_TABLE = process.env.EVENTS_TABLE || "";
 const MERCADOPAGOCLIENTS_TABLE = process.env.MERCADOPAGOCLIENTS_TABLE || "";
-const PAYMENTS_TABLE = process.env.PAYMENTS_TABLE || "";
-const SUBSCRIPTIONS_TABLE = process.env.SUBSCRIPTIONS_TABLE || "";
+const EVENTS_PAYMENTS_TABLE = process.env.EVENTS_PAYMENTS_TABLE || "";
+const SUBSCRIPTIONS_PAYMENTS_TABLE = process.env.SUBSCRIPTIONS_PAYMENTS_TABLE || "";
 const AWS = AWSXRay.captureAWS(AWSSDK);
 const db = new AWS.DynamoDB.DocumentClient();
 
@@ -20,10 +20,10 @@ export const handler = async (event: APIGatewayEvent, context: Context ): Promis
     if (event.httpMethod === "POST") return createClient(db, event, context.awsRequestId, PROFILE_TABLE, MERCADOPAGOCLIENTS_TABLE);
   }
   if (event.resource.includes('payment')) {
-    if (event.httpMethod === "POST") return createPayment(db, event, context.awsRequestId, MERCADOPAGOCLIENTS_TABLE, EVENTS_TABLE, PAYMENTS_TABLE);
+    if (event.httpMethod === "POST") return createPayment(db, event, context.awsRequestId, MERCADOPAGOCLIENTS_TABLE, EVENTS_TABLE, EVENTS_PAYMENTS_TABLE);
   }
   if (event.resource.includes('subscription')) {
-    if (event.httpMethod === "POST") return createSubscription(db, event, context.awsRequestId, MERCADOPAGOCLIENTS_TABLE, EVENTS_TABLE, SUBSCRIPTIONS_TABLE);
+    if (event.httpMethod === "POST") return createSubscription(db, event, context.awsRequestId, MERCADOPAGOCLIENTS_TABLE, EVENTS_TABLE, SUBSCRIPTIONS_PAYMENTS_TABLE);
   }
   return commonResponse(500, JSON.stringify({ error: {}, requestID: context.awsRequestId}));
 };

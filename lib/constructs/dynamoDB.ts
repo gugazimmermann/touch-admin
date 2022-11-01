@@ -18,8 +18,8 @@ export class DynamoDBConstruct extends Construct {
   public readonly referralTable: Table;
   public readonly eventsTable: Table;
   public readonly mercadoPagoClientsTable: Table;
-  public readonly paymentsTable: Table;
-  public readonly subscriptionsTable: Table;
+  public readonly eventsPaymentsTable: Table;
+  public readonly subscriptionsPaymentsTable: Table;
   public readonly surveysTable: Table;
 
  constructor(scope: Construct, id: string, props: DynamoDBConstructProps) {
@@ -95,41 +95,41 @@ export class DynamoDBConstruct extends Construct {
       projectionType: ProjectionType.ALL,
     });
 
-    this.paymentsTable = new Table(
+    this.eventsPaymentsTable = new Table(
       scope,
-      `${props.stackName}-PaymentsTable-${props.stage}`,
+      `${props.stackName}-EventsPaymentsTable-${props.stage}`,
       {
         partitionKey: { name: "paymentID", type: AttributeType.STRING },
         billingMode: BillingMode.PAY_PER_REQUEST,
         removalPolicy: RemovalPolicy.DESTROY,
       }
     );
-    this.paymentsTable.addGlobalSecondaryIndex({
+    this.eventsPaymentsTable.addGlobalSecondaryIndex({
       indexName: "byEventID",
       partitionKey: { name: "eventID", type: AttributeType.STRING },
       projectionType: ProjectionType.ALL,
     });
-    this.paymentsTable.addGlobalSecondaryIndex({
+    this.eventsPaymentsTable.addGlobalSecondaryIndex({
       indexName: "byProfileID",
       partitionKey: { name: "profileID", type: AttributeType.STRING },
       projectionType: ProjectionType.ALL,
     });
 
-    this.subscriptionsTable = new Table(
+    this.subscriptionsPaymentsTable = new Table(
       scope,
-      `${props.stackName}-SubscriptionsTable-${props.stage}`,
+      `${props.stackName}-SubscriptionsPaymentsTable-${props.stage}`,
       {
         partitionKey: { name: "subscriptionID", type: AttributeType.STRING },
         billingMode: BillingMode.PAY_PER_REQUEST,
         removalPolicy: RemovalPolicy.DESTROY,
       }
     );
-    this.subscriptionsTable.addGlobalSecondaryIndex({
+    this.subscriptionsPaymentsTable.addGlobalSecondaryIndex({
       indexName: "byEventID",
       partitionKey: { name: "eventID", type: AttributeType.STRING },
       projectionType: ProjectionType.ALL,
     });
-    this.subscriptionsTable.addGlobalSecondaryIndex({
+    this.subscriptionsPaymentsTable.addGlobalSecondaryIndex({
       indexName: "byProfileID",
       partitionKey: { name: "profileID", type: AttributeType.STRING },
       projectionType: ProjectionType.ALL,

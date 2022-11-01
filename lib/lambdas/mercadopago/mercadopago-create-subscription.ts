@@ -12,7 +12,7 @@ const createSubscription = async (
   requestID: string,
   MERCADOPAGOCLIENTS_TABLE: string,
   EVENTS_TABLE: string,
-  SUBSCRIPTIONS_TABLE: string
+  SUBSCRIPTIONS_PAYMENTS_TABLE: string
 ): Promise<APIGatewayProxyResult> => {
   const body = (event?.body ? JSON.parse(event.body) : {}) as MPPaymentType;
 
@@ -59,7 +59,7 @@ const createSubscription = async (
   }
 
   const subscriptionParams = {
-    TableName: SUBSCRIPTIONS_TABLE,
+    TableName: SUBSCRIPTIONS_PAYMENTS_TABLE,
     Item: {
       paymentID: `${MPSubscriptionResponseType?.id}`,
       profileID: body.profileID,

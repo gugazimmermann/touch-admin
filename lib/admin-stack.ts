@@ -27,8 +27,8 @@ export class AdminStack extends cdk.Stack {
       referralTable,
       eventsTable,
       mercadoPagoClientsTable,
-      paymentsTable,
-      subscriptionsTable,
+      eventsPaymentsTable,
+      subscriptionsPaymentsTable,
       surveysTable
     } = new DynamoDBConstruct(this, "DynamoDBConstruct", { stackName, stage });
 
@@ -52,8 +52,8 @@ export class AdminStack extends cdk.Stack {
       referralTable,
       eventsTable,
       mercadoPagoClientsTable,
-      paymentsTable,
-      subscriptionsTable,
+      eventsPaymentsTable,
+      subscriptionsPaymentsTable,
       surveysTable,
       stackName,
       stage,

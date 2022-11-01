@@ -56,7 +56,7 @@ const createPayment = async (
   requestID: string,
   MERCADOPAGOCLIENTS_TABLE: string,
   EVENTS_TABLE: string,
-  PAYMENTS_TABLE: string
+  EVENTS_PAYMENTS_TABLE: string
 ): Promise<APIGatewayProxyResult> => {
   const body = (event?.body ? JSON.parse(event.body) : {}) as MPPaymentType;
 
@@ -110,7 +110,7 @@ const createPayment = async (
   }
 
   const paymentParams = {
-    TableName: PAYMENTS_TABLE,
+    TableName: EVENTS_PAYMENTS_TABLE,
     Item: {
       paymentID: `${paymentResponse?.id}`,
       profileID: body.profileID,
