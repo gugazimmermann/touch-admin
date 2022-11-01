@@ -2,8 +2,9 @@ import { APIGatewayEvent, APIGatewayProxyResult } from "aws-lambda";
 import axios from "axios";
 import commonResponse from "../common/commonResponse";
 import { DocumentClient } from "aws-sdk/lib/dynamodb/document_client";
-import { ProfileType, UUID, EventType } from "../common/types";
 import { PaymentData, PaymentDataType, PaymentRes } from "../common/types-mercadopago";
+import getClientByProfileID from './get-client-by-profileID';
+import getEventByID from '../utils/get-event-by-id';
 
 const MERCADO_PAGO_ACCESS_TOKEN = process.env.MERCADO_PAGO_ACCESS_TOKEN || "";
 const MERCADO_PAGO_ACCESS_TOKEN_TEST = process.env.MERCADO_PAGO_ACCESS_TOKEN_TEST || "";
@@ -11,26 +12,6 @@ const MERCADO_PAGO_ACCESS_TOKEN_TEST = process.env.MERCADO_PAGO_ACCESS_TOKEN_TES
 const headers = {
   Authorization: `Bearer ${MERCADO_PAGO_ACCESS_TOKEN_TEST}`,
   "Content-Type": "application/json",
-};
-
-const getProfile = async (
-  db: DocumentClient,
-  TableName: string,
-  profileID: UUID
-): Promise<ProfileType> => {
-  const params = { TableName, Key: { profileID } };
-  const res = await db.get(params).promise();
-  return (res.Item || {}) as ProfileType;
-};
-
-const getEvent = async (
-  db: DocumentClient,
-  TableName: string,
-  eventID: UUID
-): Promise<EventType> => {
-  const params = { TableName, Key: { eventID } };
-  const res = await db.get(params).promise();
-  return (res.Item || {}) as EventType;
 };
 
 const mercadoPagoPayment = async (mercadoPagoPayment: PaymentData): Promise<PaymentRes> => {
@@ -42,7 +23,7 @@ const createPayment = async (
   db: DocumentClient,
   event: APIGatewayEvent,
   requestID: string,
-  PROFILE_TABLE: string,
+  MERCADOPAGOCLIENTS_TABLE: string,
   EVENTS_TABLE: string,
   PAYMENTS_TABLE: string,
 ): Promise<APIGatewayProxyResult> => {
@@ -61,8 +42,8 @@ const createPayment = async (
   )
     return commonResponse(400,JSON.stringify({ message: "Missing Data", requestID }));
 
-  const profile = await getProfile(db, PROFILE_TABLE, body.profileID);
-  const eventData = await getEvent(db, EVENTS_TABLE, body.eventID);
+  const clientData = await getClientByProfileID(db, body.profileID, MERCADOPAGOCLIENTS_TABLE);
+  const eventData = await getEventByID(db, EVENTS_TABLE, body.eventID);
   const paymentData: PaymentData = {
     additional_info: {
       items: [
@@ -76,15 +57,15 @@ const createPayment = async (
         },
       ],
       payer: {
-        first_name: profile.mercadopago?.first_name as string,
-        last_name: profile.mercadopago?.last_name as string,
+        first_name: clientData?.first_name as string,
+        last_name: clientData?.last_name as string,
         phone: {
-          area_code: profile.mercadopago?.phone?.area_code as string,
-          number: profile.mercadopago?.phone?.number as string,
+          area_code: clientData?.phone?.area_code as string,
+          number: clientData?.phone?.number as string,
         },
         address: {
-          zip_code: profile.zipCode as string,
-          street_name: profile.street as string,
+          zip_code: clientData?.address?.zip_code as string,
+          street_name: clientData?.address?.street_name as string,
         },
       },
     },
@@ -92,11 +73,11 @@ const createPayment = async (
     installments: Number(body.installments),
     issuer_id: body.issuer_id,
     payer: {
-      id: profile.mercadopago?.id as string,
-      email: profile.mercadopago?.email as string,
+      id: clientData?.id as string,
+      email: clientData?.email as string,
       identification: body.identification,
-      first_name: profile.mercadopago?.first_name as string,
-      last_name: profile.mercadopago?.last_name as string,
+      first_name: clientData?.first_name as string,
+      last_name: clientData?.last_name as string,
     },
     payment_method_id: body.payment_method_id,
     statement_descriptor: `Touch Sistemas - Plano ${eventData.plan.name}`,
@@ -128,7 +109,7 @@ const createPayment = async (
 
   const paymentParams = { TableName: PAYMENTS_TABLE, Item: {
     paymentID: `${paymentRes?.id}`,
-    profileID: profile?.profileID,
+    profileID: body.profileID,
     eventID: eventData?.eventID,
     ...paymentRes
   } };

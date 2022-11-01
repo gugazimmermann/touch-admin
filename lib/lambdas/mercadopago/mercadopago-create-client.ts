@@ -3,7 +3,7 @@ import axios from "axios";
 import { DocumentClient } from "aws-sdk/lib/dynamodb/document_client";
 import commonResponse from "../common/commonResponse";
 import { ProfileType, UUID } from '../common/types';
-import { IMercadoPagoClient, IMercadoPagoClientData } from "../common/types-mercadopago";
+import { IMercadoPagoClientData } from "../common/types-mercadopago";
 import axiosErrorHandling from "../common/axiosErrorHandling";
 import getProfileByID from '../utils/get-profile-by-id';
 import getClientByProfileID from "./get-client-by-profileID";

@@ -20,10 +20,10 @@ export const handler = async (event: APIGatewayEvent, context: Context ): Promis
     if (event.httpMethod === "POST") return createClient(db, event, context.awsRequestId, PROFILE_TABLE, MERCADOPAGOCLIENTS_TABLE);
   }
   if (event.resource.includes('payment')) {
-    if (event.httpMethod === "POST") return createPayment(db, event, context.awsRequestId, PROFILE_TABLE, EVENTS_TABLE, PAYMENTS_TABLE);
+    if (event.httpMethod === "POST") return createPayment(db, event, context.awsRequestId, MERCADOPAGOCLIENTS_TABLE, EVENTS_TABLE, PAYMENTS_TABLE);
   }
   if (event.resource.includes('subscription')) {
-    if (event.httpMethod === "POST") return createSubscription(db, event, context.awsRequestId, PROFILE_TABLE, EVENTS_TABLE, SUBSCRIPTIONS_TABLE);
+    if (event.httpMethod === "POST") return createSubscription(db, event, context.awsRequestId, MERCADOPAGOCLIENTS_TABLE, EVENTS_TABLE, SUBSCRIPTIONS_TABLE);
   }
   return commonResponse(500, JSON.stringify({ error: {}, requestID: context.awsRequestId}));
 };
