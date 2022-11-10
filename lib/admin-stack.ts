@@ -26,7 +26,6 @@ export class AdminStack extends cdk.Stack {
       profileTable,
       referralTable,
       eventsTable,
-      mercadoPagoClientsTable,
       eventsPaymentsTable,
       subscriptionsPaymentsTable,
       surveysTable
@@ -51,7 +50,6 @@ export class AdminStack extends cdk.Stack {
       profileTable,
       referralTable,
       eventsTable,
-      mercadoPagoClientsTable,
       eventsPaymentsTable,
       subscriptionsPaymentsTable,
       surveysTable,

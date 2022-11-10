@@ -1,5 +1,4 @@
 import { FREQUENCY, PLANSTYPES, LANGUAGES, SURVEYANSWER } from "./enums";
-import { MPClientType } from "../mercadopago/types/types-mercadopago";
 
 export type UUID = string;
 
@@ -33,7 +32,6 @@ export interface ProfileType extends IDBDates, IAddress, IContacts {
   logo?: string;
   map?: string;
   owners?: OwnerType[];
-  mercadopago?: MPClientType;
 }
 
 export interface OwnerType extends IDBDates, IContacts {

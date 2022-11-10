@@ -59,8 +59,6 @@ export class RestAPIResourcesConstruct extends Construct {
     eventsResourceByProfileIDResourceProfileIDVarPlanTypeVar.addMethod('GET', new LambdaIntegration(props.eventsLambda), { authorizer: props.authorizer });
 
     const mercadopagoResource = props.restApi.root.addResource('mercadopago');
-    const mercadopagoResourceClientResource = mercadopagoResource.addResource('client');
-    mercadopagoResourceClientResource.addMethod('POST', new LambdaIntegration(props.mercadoPagoLambda), { authorizer: props.authorizer });
     const mercadopagoResourcePaymentResource = mercadopagoResource.addResource('payment');
     mercadopagoResourcePaymentResource.addMethod('POST', new LambdaIntegration(props.mercadoPagoLambda), { authorizer: props.authorizer });
     const mercadopagoResourcePaymentResourceSubscriptionResource = mercadopagoResourcePaymentResource.addResource('subscription');

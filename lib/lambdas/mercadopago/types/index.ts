@@ -190,6 +190,7 @@ export type MPCardTokenType = {
 export interface MPPaymentType extends PaymentFormType {
   profileID: UUID;
   eventID: UUID;
+  cardholderName: string;
   installments: number;
   issuer_id: string;
   identification: {
@@ -229,7 +230,6 @@ export type MPPaymentPayloadType = {
   installments: number;
   issuer_id: string;
   payer: {
-    id: string;
     email: string;
     identification: {
       type: string;

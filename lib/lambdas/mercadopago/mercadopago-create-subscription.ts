@@ -3,14 +3,14 @@ import commonResponse from "../common/commonResponse";
 import { DocumentClient } from "aws-sdk/lib/dynamodb/document_client";
 import { getEventByID } from "../utils";
 import { MPPaymentType, MPSubscriptionPayloadType } from "./types";
-import { getClientByProfileID } from "./utils/db";
 import { subscriptionCreate } from "./utils/api";
+import { getProfileByID } from '../utils/index';
 
 const createSubscription = async (
   db: DocumentClient,
   event: APIGatewayEvent,
   requestID: string,
-  MERCADOPAGOCLIENTS_TABLE: string,
+  PROFILE_TABLE: string,
   EVENTS_TABLE: string,
   SUBSCRIPTIONS_PAYMENTS_TABLE: string
 ): Promise<APIGatewayProxyResult> => {
@@ -18,13 +18,13 @@ const createSubscription = async (
 
   if (!body || !body.profileID || !body.eventID || !body.token) return commonResponse(400, JSON.stringify({ message: "Missing Data", requestID }));
   
-  const clientData = await getClientByProfileID(db, body.profileID, MERCADOPAGOCLIENTS_TABLE);
+  const profileData = await getProfileByID(db, body.profileID, PROFILE_TABLE);
   const eventData = await getEventByID(db, EVENTS_TABLE, body.eventID);
 
   const subscriptionPayload: MPSubscriptionPayloadType = {
     reason: "Touch Sistemas - Assinatura",
     external_reference: body.eventID,
-    payer_email: clientData?.email as string,
+    payer_email: profileData.email as string,
     card_token_id: body.token,
     auto_recurring: {
       frequency: 1,

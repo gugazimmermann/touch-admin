@@ -1,13 +1,15 @@
 import { APIGatewayEvent, APIGatewayProxyResult } from "aws-lambda";
 import commonResponse from "../common/commonResponse";
 import { DocumentClient } from "aws-sdk/lib/dynamodb/document_client";
-import { getClientByProfileID } from "./utils/db";
 import { getEventByID } from "../utils";
-import { EventType } from '../common/types';
-import { MPPaymentPayloadType, MPClientDataType, MPPaymentType } from "./types";
+import { EventType, ProfileType } from '../common/types';
+import { MPPaymentPayloadType, MPPaymentType } from "./types";
 import { paymentCreate } from "./utils/api";
+import { getProfileByID } from '../utils/index';
 
-const createPaymentData = (event: EventType, client: MPClientDataType, payment: MPPaymentType): MPPaymentPayloadType => {
+const createPaymentData = (event: EventType, profile: ProfileType, payment: MPPaymentType): MPPaymentPayloadType => {
+  const name = payment.cardholderName.split(" ");
+  const phone = profile.phone?.replace(/[^\d]/g, "").slice(2);
   return {
     additional_info: {
       items: [
@@ -21,15 +23,15 @@ const createPaymentData = (event: EventType, client: MPClientDataType, payment: 
         },
       ],
       payer: {
-        first_name: client?.first_name as string,
-        last_name: client?.last_name as string,
+        first_name: name[0],
+        last_name: name[1] || name[0],
         phone: {
-          area_code: client?.phone?.area_code as string,
-          number: client?.phone?.number as string,
+          area_code: phone?.slice(0, 2) as string,
+          number: phone?.slice(2) as string,
         },
         address: {
-          zip_code: client?.address?.zip_code as string,
-          street_name: client?.address?.street_name as string,
+          zip_code: profile.zipCode as string,
+          street_name: profile.street as string,
         },
       },
     },
@@ -37,11 +39,10 @@ const createPaymentData = (event: EventType, client: MPClientDataType, payment: 
     installments: Number(payment.installments),
     issuer_id: payment.issuer_id,
     payer: {
-      id: client?.id as string,
-      email: client?.email as string,
+      email: profile.email as string,
       identification: payment.identification,
-      first_name: client?.first_name as string,
-      last_name: client?.last_name as string,
+      first_name: name[0],
+      last_name: name[1] || name[0],
     },
     payment_method_id: payment.payment_method_id,
     statement_descriptor: `Touch Sistemas - Plano ${event.plan.name}`,
@@ -54,7 +55,7 @@ const createPayment = async (
   db: DocumentClient,
   event: APIGatewayEvent,
   requestID: string,
-  MERCADOPAGOCLIENTS_TABLE: string,
+  PROFILE_TABLE: string,
   EVENTS_TABLE: string,
   EVENTS_PAYMENTS_TABLE: string
 ): Promise<APIGatewayProxyResult> => {
@@ -64,6 +65,7 @@ const createPayment = async (
     !body ||
     !body.profileID ||
     !body.eventID ||
+    !body.cardholderName ||
     !body.installments ||
     !body.issuer_id ||
     !body.identification?.type ||
@@ -71,21 +73,20 @@ const createPayment = async (
     !body.payment_method_id ||
     !body.token
   )
-    return commonResponse(
-      400,
-      JSON.stringify({ message: "Missing Data", requestID })
-    );
+    return commonResponse(400, JSON.stringify({ message: "Missing Data", requestID }));
 
   const eventData = await getEventByID(db, body.eventID, EVENTS_TABLE);
-  const clientData = await getClientByProfileID(
-    db,
-    body.profileID,
-    MERCADOPAGOCLIENTS_TABLE
-  );
-  const paymentPayload = createPaymentData(eventData, clientData, body);
-  console.debug("paymentPayload", JSON.stringify(paymentPayload, undefined, 2));
-  const paymentResponse = await paymentCreate(paymentPayload);
+  const profileData = await getProfileByID(db, body.profileID, PROFILE_TABLE);
 
+  const paymentPayload = createPaymentData(eventData, profileData, body);
+  console.debug("paymentPayload", JSON.stringify(paymentPayload, undefined, 2));
+  
+  const paymentResponse = await paymentCreate(paymentPayload);
+  console.debug("paymentResponse", JSON.stringify(paymentResponse, undefined, 2));
+  if (!paymentResponse.id) {
+    return commonResponse(500, JSON.stringify({ data: {error: 'create payment error'}, requestID }));
+  }
+  
   const params = {
     TableName: EVENTS_TABLE,
     Key: { eventID: body.eventID },
@@ -100,10 +101,7 @@ const createPayment = async (
 
   try {
     res = await db.update(params).promise();
-    console.debug(
-      `res.Attributes`,
-      JSON.stringify(res.Attributes, undefined, 2)
-    );
+    console.debug(`res.Attributes`, JSON.stringify(res.Attributes, undefined, 2));
   } catch (error) {
     console.error(`error`, JSON.stringify(error, undefined, 2));
     return commonResponse(500, JSON.stringify({ error, requestID }));
